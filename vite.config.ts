@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "apple-touch-icon.png"],
       manifest: {
-        name: "二游日常打卡",
-        short_name: "二游打卡",
+        name: "次元日常",
+        short_name: "次元日常",
         description: "简洁的二游日常任务打卡工具。",
         lang: "zh-CN",
         start_url: "./",

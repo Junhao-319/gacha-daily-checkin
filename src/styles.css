@@ -2587,3 +2587,43 @@ button.heat-cell:hover {
     font-size: 1.15rem;
   }
 }
+/* 移动端性能优化 */
+.global-background-slide,
+.global-background-media {
+  will-change: transform, opacity;
+  contain: paint;
+}
+
+.home-insights,
+.today-games,
+.history-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 500px;
+}
+
+@media (max-width: 768px) {
+  .global-background-slide.is-active {
+    animation-duration: 8s;
+  }
+
+  .global-background::before,
+  .global-background::after {
+    animation: none;
+    filter: none;
+    opacity: 0.38;
+  }
+
+  .history-card,
+  .today-card,
+  .game-card,
+  .insight-stack,
+  .modal-panel,
+  .task-panel {
+    backdrop-filter: none;
+  }
+
+  .game-card,
+  .task-row {
+    transition-duration: 80ms;
+  }
+}

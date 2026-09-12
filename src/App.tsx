@@ -257,7 +257,7 @@ export default function App() {
   );
   return (
     <div className="app-shell">
-      <GlobalBackground activeGames={activeGames} preference={state.backgrounds.global} />
+      <GlobalBackground activeGames={activeGames} backgrounds={state.backgrounds} preference={state.backgrounds.global} />
       <div className="ambient-glow ambient-glow-one" aria-hidden="true" />
       <div className="ambient-glow ambient-glow-two" aria-hidden="true" />
 
@@ -278,7 +278,7 @@ export default function App() {
           </span>
           <span>
             <small>DAILY CHECK-IN</small>
-            <strong>二游日常</strong>
+            <strong>次元日常</strong>
           </span>
         </a>
 
@@ -384,6 +384,9 @@ export default function App() {
         onApply={(background) => {
           if (backgroundDialogTarget) {
             dispatch({ type: 'set-background', target: backgroundDialogTarget, background });
+            if (backgroundDialogTarget !== 'global') {
+              dispatch({ type: 'set-background', target: 'global', background });
+            }
           }
         }}
         onClose={() => setBackgroundDialogTarget(null)}

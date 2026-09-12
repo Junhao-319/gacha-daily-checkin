@@ -57,7 +57,7 @@ namespace GachaDailyLauncher
                 {
                     MessageBox.Show(
                         "启动失败：" + exception.Message + Environment.NewLine + Environment.NewLine + AppUrl,
-                        "二游日常打卡",
+                        "次元日常",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error
                     );
@@ -145,7 +145,7 @@ namespace GachaDailyLauncher
 
         private static void ActivateExistingWindow()
         {
-            IntPtr window = FindWindow(null, "二游日常打卡");
+            IntPtr window = FindWindow(null, "次元日常");
             if (window != IntPtr.Zero)
             {
                 ShowWindow(window, 9);
@@ -159,7 +159,7 @@ namespace GachaDailyLauncher
 
             public MainForm()
             {
-                Text = "二游日常打卡";
+                Text = "次元日常";
                 StartPosition = FormStartPosition.CenterScreen;
                 MinimumSize = new Size(920, 640);
                 ClientSize = new Size(1180, 780);
@@ -199,7 +199,7 @@ namespace GachaDailyLauncher
                 {
                     MessageBox.Show(
                         "应用界面初始化失败：" + eventArgs.InitializationException.Message,
-                        "二游日常打卡",
+                        "次元日常",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error
                     );
@@ -231,7 +231,7 @@ namespace GachaDailyLauncher
 
             trayIcon = new NotifyIcon();
             trayIcon.Icon = icon;
-            trayIcon.Text = "二游日常打卡";
+            trayIcon.Text = "次元日常";
             trayIcon.ContextMenuStrip = menu;
             trayIcon.DoubleClick += delegate { OpenBrowser(); };
             trayIcon.Visible = true;
@@ -266,7 +266,7 @@ namespace GachaDailyLauncher
             {
                 MessageBox.Show(
                     "无法打开浏览器：" + exception.Message + Environment.NewLine + AppUrl,
-                    "二游日常打卡",
+                    "次元日常",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
                 );

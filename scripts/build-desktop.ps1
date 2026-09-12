@@ -1,5 +1,5 @@
 param(
-  [string]$OutputPath = (Join-Path ([Environment]::GetFolderPath("Desktop")) "二游打卡.exe")
+  [string]$OutputPath = (Join-Path ([Environment]::GetFolderPath("Desktop")) "次元日常.exe")
 )
 
 $ErrorActionPreference = "Stop"
@@ -8,7 +8,7 @@ $distPath = Join-Path $projectRoot "dist"
 $sourcePath = Join-Path $projectRoot "desktop-launcher\Program.cs"
 $iconPath = Join-Path $projectRoot "public\app.ico"
 $buildPath = Join-Path $projectRoot "desktop-launcher\build"
-$tempExe = Join-Path $buildPath "二游打卡.exe"
+$tempExe = Join-Path $buildPath "次元日常.exe"
 $compiler = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 $webViewSdk = Join-Path $projectRoot ".tools\webview2-sdk"
 $webViewCore = Join-Path $webViewSdk "lib\net45\Microsoft.Web.WebView2.Core.dll"
