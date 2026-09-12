@@ -39,6 +39,7 @@ export interface PersistedStateV3 {
 export interface StorageLoadResult {
   state: PersistedStateV3;
   error: string | null;
+  hasStoredState: boolean;
 }
 
 export interface WallpaperItem {

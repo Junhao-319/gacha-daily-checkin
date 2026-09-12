@@ -329,21 +329,23 @@ export function loadPersistedState(
   if (!storage) {
     return {
       state: createInitialState(now),
-      error: "当前浏览器无法访问本地存储，打卡记录将无法保存。"
+      error: "当前浏览器无法访问本地存储，打卡记录将无法保存。",
+      hasStoredState: false
     };
   }
 
   try {
     const raw = storage.getItem(STORAGE_KEY) ?? storage.getItem(LEGACY_STORAGE_KEY) ?? storage.getItem(V1_STORAGE_KEY);
     if (!raw) {
-      return { state: createInitialState(now), error: null };
+      return { state: createInitialState(now), error: null, hasStoredState: false };
     }
 
-    return { state: parsePersistedState(raw, now), error: null };
+    return { state: parsePersistedState(raw, now), error: null, hasStoredState: true };
   } catch (error) {
     return {
       state: createInitialState(now),
-      error: error instanceof Error ? error.message : "本地数据读取失败"
+      error: error instanceof Error ? error.message : "本地数据读取失败",
+      hasStoredState: false
     };
   }
 }
@@ -369,6 +371,7 @@ export function clearPersistedState(storage: StorageLike | null): string | null 
   try {
     storage.removeItem(STORAGE_KEY);
     storage.removeItem(LEGACY_STORAGE_KEY);
+    storage.removeItem(V1_STORAGE_KEY);
     return null;
   } catch {
     return "清除本地数据失败。";

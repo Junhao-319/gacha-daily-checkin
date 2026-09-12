@@ -309,8 +309,7 @@ namespace GachaDailyLauncher
 
                 try
                 {
-                    StreamReader reader = new StreamReader(stream, Encoding.ASCII, false, 1024, true);
-                    string requestLine = reader.ReadLine();
+                    string requestLine = ReadHttpLine(stream);
                     if (String.IsNullOrWhiteSpace(requestLine))
                     {
                         return;
@@ -325,14 +324,22 @@ namespace GachaDailyLauncher
 
                     string method = requestParts[0].ToUpperInvariant();
                     bool headOnly = method == "HEAD";
-                    if (method != "GET" && !headOnly)
+                    bool postBody = method == "POST";
+                    if (method != "GET" && !headOnly && !postBody)
                     {
                         WriteText(stream, 405, "Method Not Allowed", "text/plain; charset=utf-8", "Method Not Allowed");
                         return;
                     }
 
+                    int contentLength = 0;
                     string line;
-                    while (!String.IsNullOrEmpty(line = reader.ReadLine())) { }
+                    while (!String.IsNullOrEmpty(line = ReadHttpLine(stream)))
+                    {
+                        if (line.StartsWith("Content-Length:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Int32.TryParse(line.Substring(line.IndexOf(':') + 1).Trim(), out contentLength);
+                        }
+                    }
 
                     string path;
                     try
@@ -343,6 +350,22 @@ namespace GachaDailyLauncher
                     {
                         WriteText(stream, 400, "Bad Request", "text/plain; charset=utf-8", "Bad Request");
                         return;
+                    }
+
+                    if (path.Equals(BasePath + "api/state", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (method == "POST")
+                        {
+                            byte[] stateBody = ReadExactBytes(stream, Math.Max(0, contentLength));
+                            SaveNativeState(Encoding.UTF8.GetString(stateBody));
+                            WriteText(stream, 204, "No Content", "text/plain; charset=utf-8", "", true);
+                            return;
+                        }
+
+                        if (LoadNativeState(stream, headOnly))
+                        {
+                            return;
+                        }
                     }
 
                     if (path == HealthPath)
@@ -405,10 +428,11 @@ namespace GachaDailyLauncher
                         : String.Empty;
                     WriteResponse(stream, 200, "OK", GetContentType(relativePath), body, headOnly, extraHeaders);
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
                     try
                     {
+                        File.AppendAllText(Path.Combine(Path.GetTempPath(), "gacha-launcher-error.log"), DateTime.Now.ToString("s") + " " + exception + Environment.NewLine);
                         WriteText(stream, 500, "Internal Server Error", "text/plain; charset=utf-8", "Internal Server Error");
                     }
                     catch
@@ -647,6 +671,84 @@ namespace GachaDailyLauncher
             }
             return null;
         }
+        private static string NativeStatePath
+        {
+            get
+            {
+                string directory = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "GachaDailyCheckin"
+                );
+                Directory.CreateDirectory(directory);
+                return Path.Combine(directory, "state.json");
+            }
+        }
+
+        private static string ReadHttpLine(NetworkStream stream)
+        {
+            System.Text.StringBuilder line = new System.Text.StringBuilder();
+            while (line.Length < 65536)
+            {
+                int value = stream.ReadByte();
+                if (value < 0 || value == 10)
+                {
+                    break;
+                }
+                if (value != 13)
+                {
+                    line.Append((char)value);
+                }
+            }
+            return line.ToString();
+        }
+
+        private static byte[] ReadExactBytes(NetworkStream stream, int length)
+        {
+            byte[] body = new byte[length];
+            int offset = 0;
+            while (offset < length)
+            {
+                int read = stream.Read(body, offset, length - offset);
+                if (read <= 0)
+                {
+                    break;
+                }
+                offset += read;
+            }
+            if (offset == length)
+            {
+                return body;
+            }
+
+            byte[] partial = new byte[offset];
+            Array.Copy(body, partial, offset);
+            return partial;
+        }
+
+        private static bool LoadNativeState(NetworkStream stream, bool headOnly)
+        {
+            string statePath = NativeStatePath;
+            if (!File.Exists(statePath))
+            {
+                WriteText(stream, 404, "Not Found", "text/plain; charset=utf-8", "No native state", headOnly);
+                return true;
+            }
+
+            byte[] body = File.ReadAllBytes(statePath);
+            WriteResponse(stream, 200, "OK", "application/json; charset=utf-8", body, headOnly, String.Empty);
+            return true;
+        }
+
+        private static void SaveNativeState(string stateJson)
+        {
+            if (String.IsNullOrWhiteSpace(stateJson) || !stateJson.TrimStart().StartsWith("{"))
+            {
+                throw new InvalidOperationException("Invalid state payload");
+            }
+
+            File.WriteAllText(NativeStatePath, stateJson, new UTF8Encoding(false));
+        }
+
         private static void HandleWallpaperFileRequest(NetworkStream stream, string rawTarget, bool headOnly)
         {
             Uri uri = new Uri("http://localhost" + rawTarget);

@@ -1,5 +1,23 @@
 {
-  "honkai-impact-3rd": {
+  "path-to-nowhere": {
+    "url": "https://static.aisnogames.com/aisnoweb/aisno/wqmtother/_next/static/media/share-en.130361ab.jpg",
+    "file": "path-to-nowhere.jpg"
+  },
+  "tears-of-themis": {
+    "url": "https://webstatic.hoyoverse.com/upload/event/2021/04/17/fbc481b5ca23a0fb6ddb87a31b497ef4_6122606123017111972.jpg",
+    "file": "tears-of-themis.jpg"
+  },
+  "nikke": {
+    "url": "https://game.gtimg.cn/images/nikke/act/welfare202505/new_swip_img1.jpg",
+    "file": "nikke.jpg"
+  },  "home-miku-2026": {
+    "url": "https://magicalmirai.com/2026/images/og.jpg",
+    "file": "home-miku-magical-mirai-2026.jpg"
+  },
+  "home-miku-2025": {
+    "url": "https://magicalmirai.com/2025/images/og.jpg",
+    "file": "home-miku-magical-mirai-2025.jpg"
+  },  "honkai-impact-3rd": {
     "url": "https://act-webstatic.mihoyo.com/puzzle/bh3/pz_pmEtnQnIB1/resource/puzzle/2026/07/20/311a6c767c9aa0ef3febc5f1631e2e59_5912638023656874024.png",
     "file": "honkai-impact-3rd.png"
   },
@@ -8,8 +26,8 @@
     "file": "genshin-impact.webp"
   },
   "honkai-star-rail": {
-    "url": "https://img.qieyou.com/article/20250525/d091f61a87fc8a7d158b641d46a1e433.jpg",
-    "file": "honkai-star-rail-v2.jpg"
+    "url": "https://act-webstatic.mihoyo.com/puzzle/hkrpg/pz_0gxSMfsWEq/resource/puzzle/2026/08/03/5305bb1380ce7c471254bf5b259a62fe_405046704581839248.png",
+    "file": "honkai-star-rail-v3.png"
   },
   "zenless-zone-zero": {
     "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4162040/3676e4aea45abf0636d68c65e10166e0c380b36a/capsule_231x87_alt_assets_1_schinese.jpg?t=1788905636",
@@ -28,8 +46,8 @@
     "file": "arknights.jpg"
   },
   "arknights-endfield": {
-    "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/2f1ad116d0e21bb8a7930cd4874a30f9c2534005/capsule_231x87_schinese.jpg?t=1788302000",
-    "file": "arknights-endfield.jpg"
+    "url": "https://web.hycdn.cn/upload/image/20260602/38ce571934dafe453b9f0a6033f353bc.jpg",
+    "file": "arknights-endfield-v2.jpg"
   },
   "blue-archive": {
     "url": "https://cdn.akamai.steamstatic.com/steam/apps/3557620/library_hero.jpg",

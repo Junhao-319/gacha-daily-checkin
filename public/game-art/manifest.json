@@ -1,13 +1,13 @@
 {
-  "version": "a5525d8f11b765fd",
+  "version": "15768b88b2beea59",
   "images": {
     "aether-gazer.jpg": {
       "sha256": "48852f06c0ed34324806b86ab13933098ce0991556a1c16e60544bdb1efd948d",
       "bytes": 270814
     },
-    "arknights-endfield.jpg": {
-      "sha256": "83201fd063ff2e17c17053648408cbe46d6f244a1dd099a7f3e712b452b6cd3c",
-      "bytes": 12723
+    "arknights-endfield-v2.jpg": {
+      "sha256": "10cf3d83cb190bb30dc58198253099f6bf6d5f0b0863a258394e58537eb96070",
+      "bytes": 1444406
     },
     "arknights.jpg": {
       "sha256": "364808c8921b70b37a3a0ba68f656428ef13161425965bddbdf6ab7433b917ec",
@@ -33,13 +33,21 @@
       "sha256": "05bda7c8ad1c0adbde032c643b80fc152a99ea7a11a000c641ecbbfc320a614d",
       "bytes": 277585
     },
+    "home-miku-magical-mirai-2025.jpg": {
+      "sha256": "8153e9fe3c94ae7b04bc8199bf5db5ec0496aa8ec49d237fb0517b59f4138fb7",
+      "bytes": 355189
+    },
+    "home-miku-magical-mirai-2026.jpg": {
+      "sha256": "00277014b8d9a860c9caa1d4e7717a188f571f7a0ecbd497c3bea970a88ac6af",
+      "bytes": 280338
+    },
     "honkai-impact-3rd.png": {
       "sha256": "b5565c62521b77327905aea15f5cacac94975c9555dab5571608a6a8206afb1e",
       "bytes": 975864
     },
-    "honkai-star-rail-v2.jpg": {
-      "sha256": "6ff538f723f49b27dfde980620b5e7ba60cacf9c8675e401110c9a810e595e05",
-      "bytes": 92823
+    "honkai-star-rail-v3.png": {
+      "sha256": "4dbd58ca95426041ff7290d2ca363186b33b8b1ad19eafc91d6b027992f3cdda",
+      "bytes": 4738968
     },
     "infinite-nikki.jpg": {
       "sha256": "d2ad5fc335be9dbce5d34a3cd6315baade02f34a5fb2364bbed3e09211ef2b3a",
@@ -49,9 +57,17 @@
       "sha256": "5e76198b40630d7c564246ccaf5c7c607a1dbde920ab31ac3f398212ca258644",
       "bytes": 281435
     },
+    "nikke.jpg": {
+      "sha256": "a94591060f36b975f83a8e86eaa6cf4c8facb12b90e094208478366b7231cdd6",
+      "bytes": 154687
+    },
     "onmyoji.jpg": {
       "sha256": "08b4f739fe2d1cc03ee53e1634f051e32b04a97eb49177186e5d9ef8fdc80f0c",
       "bytes": 430886
+    },
+    "path-to-nowhere.jpg": {
+      "sha256": "6683d03720745bd8fd70ebcecf0bd13489565308bf3cda686621445385c641a0",
+      "bytes": 322584
     },
     "princess-connect.jpg": {
       "sha256": "258f11eb26ad9a731f1d96f6f9d609f63cbb859294855050b997d58058f49c6e",
@@ -68,6 +84,10 @@
     "snowbreak.jpg": {
       "sha256": "9508a08ade59636c1d6148c52b0b4db1d86816d0769096bfcdf925e8f58a4f48",
       "bytes": 483055
+    },
+    "tears-of-themis.jpg": {
+      "sha256": "4c6bb246085e9ecaed4d73659b0f9ab3bdb4785d8280c80953d28975da4abc36",
+      "bytes": 708825
     },
     "tower-of-fantasy.jpg": {
       "sha256": "25ec93d546d9ae088af314db035b0d3967c7b953c42a67e051fe2c47c5128a37",

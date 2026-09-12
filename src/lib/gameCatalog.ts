@@ -43,7 +43,7 @@ export const GAME_CATALOG: GameCatalogEntry[] = [
     publisher: "米哈游",
     genre: "回合制",
     accent: "#7a7cf4",
-    artwork: "game-art/honkai-star-rail-v2.jpg",
+    artwork: "game-art/honkai-star-rail-v3.png",
     tasks: ["完成每日实训", "消耗开拓力", "领取派遣奖励", "收取邮件与支援奖励"]
   },
   {
@@ -63,7 +63,7 @@ export const GAME_CATALOG: GameCatalogEntry[] = [
     publisher: "米哈游",
     genre: "恋爱推理",
     accent: "#b8895a",
-    artwork: null,
+    artwork: "game-art/tears-of-themis.jpg",
     tasks: ["完成每日任务", "消耗体力", "领取基地奖励", "与好友互动"]
   },
   {
@@ -103,7 +103,7 @@ export const GAME_CATALOG: GameCatalogEntry[] = [
     publisher: "鹰角网络",
     genre: "3D 冒险",
     accent: "#d4ae46",
-    artwork: "game-art/arknights-endfield.jpg",
+    artwork: "game-art/arknights-endfield-v2.jpg",
     tasks: ["完成日常委托", "消耗理智", "收取基建产出", "领取邮件与活动奖励"]
   },
   {
@@ -243,7 +243,7 @@ export const GAME_CATALOG: GameCatalogEntry[] = [
     publisher: "自意网络",
     genre: "塔防",
     accent: "#7464a8",
-    artwork: null,
+    artwork: "game-art/path-to-nowhere.jpg",
     tasks: ["完成每日任务", "消耗体力", "完成监管事件", "领取破碎防线奖励"]
   },
   {
@@ -253,7 +253,7 @@ export const GAME_CATALOG: GameCatalogEntry[] = [
     publisher: "腾讯游戏",
     genre: "射击",
     accent: "#e75c78",
-    artwork: null,
+    artwork: "game-art/nikke.jpg",
     tasks: ["完成每日任务", "完成同步器", "完成拦截战", "领取免费商店奖励"]
   }
 ];
