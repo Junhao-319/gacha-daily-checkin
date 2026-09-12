@@ -14,33 +14,43 @@ function resolvePreferenceUrl(preference: BackgroundPreference | null): string |
         return `${import.meta.env.BASE_URL}api/wallpaper-file${url.search}`;
       }
     } catch {
-      // 保留原始地址，由图片加载失败逻辑处理。
+      // 保留原始地址，由媒体加载失败逻辑处理。
     }
   }
 
   return preference.value;
 }
+
 export function useBackgroundMedia(preference: BackgroundPreference | null) {
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(preference?.type === "upload");
+  const [assetUrls, setAssetUrls] = useState<string[]>([]);
+  const [loading, setLoading] = useState(
+    preference?.type === "upload" || preference?.type === "gallery"
+  );
 
   useEffect(() => {
-    let objectUrl: string | null = null;
+    const objectUrls: string[] = [];
     let cancelled = false;
 
-    async function resolveUpload() {
-      setUploadedUrl(null);
-      if (!preference || preference.type !== "upload") {
+    async function resolveLocalAssets() {
+      setAssetUrls([]);
+      if (!preference || (preference.type !== "upload" && preference.type !== "gallery")) {
         setLoading(false);
         return;
       }
 
       setLoading(true);
       try {
-        const blob = await loadBackgroundAsset(preference.value);
-        if (blob && !cancelled) {
-          objectUrl = URL.createObjectURL(blob);
-          setUploadedUrl(objectUrl);
+        const assetIds =
+          preference.type === "gallery"
+            ? preference.assetIds ?? []
+            : [preference.value];
+        const blobs = await Promise.all(assetIds.map((assetId) => loadBackgroundAsset(assetId)));
+        const urls = blobs
+          .filter((blob): blob is Blob => Boolean(blob))
+          .map((blob) => URL.createObjectURL(blob));
+        objectUrls.push(...urls);
+        if (!cancelled) {
+          setAssetUrls(urls);
         }
       } finally {
         if (!cancelled) {
@@ -49,17 +59,23 @@ export function useBackgroundMedia(preference: BackgroundPreference | null) {
       }
     }
 
-    void resolveUpload();
+    void resolveLocalAssets();
     return () => {
       cancelled = true;
-      if (objectUrl) {
+      for (const objectUrl of objectUrls) {
         URL.revokeObjectURL(objectUrl);
       }
     };
   }, [preference]);
 
+  const externalUrl =
+    preference?.type === "upload" || preference?.type === "gallery"
+      ? null
+      : resolvePreferenceUrl(preference);
+
   return {
-    url: preference?.type === "upload" ? uploadedUrl : resolvePreferenceUrl(preference),
+    url: externalUrl ?? assetUrls[0] ?? null,
+    urls: externalUrl ? [externalUrl] : assetUrls,
     mediaType: preference?.mediaType ?? null,
     loading
   };

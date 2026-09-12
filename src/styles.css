@@ -2769,3 +2769,108 @@ body::-webkit-scrollbar,
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent), var(--shadow-sm);
   }
 }
+/* 本地图集轮换与自适应填充 */
+.background-media-layer,
+.global-background-slide.background-media-layer,
+.global-background-slide.background-media-layer.is-active {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: none;
+  transition: opacity 900ms ease;
+}
+
+.background-media-layer { opacity: 0; }
+.background-media-layer.is-active { opacity: 1; }
+.background-media-layer.is-leaving { opacity: 0; }
+
+.game-detail-custom-media.background-media-layer.is-active,
+.game-detail-default-media.background-media-layer.is-active {
+  opacity: 0.9;
+}
+
+.background-upload-options { display: grid; gap: 12px; }
+
+/* 不同比例图片：模糊铺底 + 原图完整显示 */
+.adaptive-media-frame {
+  display: block;
+  overflow: hidden;
+  background: #08111f;
+}
+
+.adaptive-media-frame::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 10, 20, 0.04), rgba(4, 10, 20, 0.24));
+  content: "";
+  pointer-events: none;
+}
+
+.adaptive-media-backdrop,
+.adaptive-media-foreground {
+  position: absolute;
+  display: block;
+}
+
+.adaptive-media-backdrop {
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  object-fit: cover;
+  object-position: center;
+  filter: blur(24px) saturate(0.88) brightness(0.58);
+  transform: scale(1.04);
+}
+
+.adaptive-media-foreground {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: saturate(1.03);
+}
+
+.game-card {
+  background-image:
+    linear-gradient(180deg, rgba(5, 12, 25, 0.08) 5%, rgba(5, 12, 25, 0.2) 42%, rgba(5, 12, 25, 0.94) 100%),
+    linear-gradient(135deg, color-mix(in srgb, var(--game-color) 65%, #142238), #101a2d);
+}
+
+.game-card.is-complete {
+  background-image:
+    linear-gradient(180deg, rgba(5, 12, 25, 0.05) 5%, rgba(5, 12, 25, 0.22) 42%, rgba(5, 24, 23, 0.95) 100%),
+    linear-gradient(135deg, var(--success), #102a38);
+}
+
+.game-card-art {
+  background-color: #101a2d;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.game-card-art::before {
+  position: absolute;
+  inset: -22px;
+  background-image: var(--game-artwork), var(--game-artwork-fallback);
+  background-position: center;
+  background-size: cover;
+  content: "";
+  filter: blur(18px) brightness(0.64);
+  transform: scale(1.12);
+}
+
+.game-detail-backdrop::before {
+  position: absolute;
+  inset: -30px;
+  background-image: var(--game-artwork), var(--game-artwork-fallback);
+  background-position: center;
+  background-size: cover;
+  content: "";
+  filter: blur(26px) brightness(0.56);
+  transform: scale(1.08);
+}

@@ -105,7 +105,6 @@ export const GAME_CATALOG: GameCatalogEntry[] = [
     genre: "3D 冒险",
     accent: "#d4ae46",
     artwork: "game-art/arknights-endfield-v2.jpg",
-    videoArtwork: "game-art/arknights-endfield-rossi.mp4",
     tasks: ["完成日常委托", "消耗理智", "收取基建产出", "领取邮件与活动奖励"]
   },
   {

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { getArtworkUrls, useArtworkVersion } from "../lib/artworkSync";
-import { GAME_CATALOG } from "../lib/gameCatalog";
 import { BackgroundMedia } from "./BackgroundMedia";
 import type { BackgroundPreference } from "../types";
 
@@ -8,9 +7,10 @@ interface GlobalBackgroundProps {
   preference: BackgroundPreference | null;
 }
 
-const ANIME_GALLERY_PATHS = GAME_CATALOG
-  .map((entry) => entry.artwork)
-  .filter((path): path is string => Boolean(path));
+const ANIME_GALLERY_PATHS = [
+  "anime-gallery/sina-forest.jpg",
+  "anime-gallery/sina-sakura.jpg"
+];
 
 function shuffle<T>(items: T[]): T[] {
   const copy = [...items];

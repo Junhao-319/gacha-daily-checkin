@@ -87,6 +87,47 @@ export function BackgroundDialog({
     }
   };
 
+  const handleGalleryUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const images = Array.from(files)
+      .filter((file) => file.type.startsWith("image/") || /\.(jpe?g|png|webp|gif|bmp|avif)$/i.test(file.name))
+      .slice(0, 40);
+    if (images.length === 0) {
+      setError("所选文件夹中没有可用的图片文件");
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+    try {
+      const assetIds: string[] = [];
+      for (const file of images) {
+        try {
+          assetIds.push(await saveBackgroundAsset(file));
+        } catch {
+          // 跳过无法保存的单个文件，保留其余图集。
+        }
+      }
+      if (assetIds.length === 0) {
+        throw new Error("图集保存失败");
+      }
+      applyAndClose({
+        type: "gallery",
+        mediaType: "image",
+        value: assetIds[0],
+        assetIds,
+        title: `本地图集 · ${assetIds.length} 张`
+      });
+    } catch {
+      setError("保存本地图集失败，请检查图片格式或存储空间");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <Modal
       description={`正在设置${targetLabel}。可使用 Wallpaper Engine 壁纸、上传文件或网络图片。`}
@@ -157,19 +198,24 @@ export function BackgroundDialog({
             <h3 id="custom-background-heading">上传图片或视频</h3>
           </div>
         </div>
-        <label className="background-upload">
-          <ImageIcon width="20" height="20" />
-          <span>
-            <strong>{uploading ? "正在保存..." : "选择本地背景文件"}</strong>
-            <small>支持 JPG、PNG、WebP、GIF、MP4、WebM</small>
-          </span>
-          <input
-            accept="image/*,video/*"
-            disabled={uploading}
-            onChange={(event) => void handleUpload(event.target.files?.[0])}
-            type="file"
-          />
-        </label>
+        <div className="background-upload-options">
+          <label className="background-upload">
+            <ImageIcon width="20" height="20" />
+            <span>
+              <strong>{uploading ? "正在保存..." : "选择单张图片或视频"}</strong>
+              <small>作为当前游戏或首页的固定背景</small>
+            </span>
+            <input accept="image/*,video/*" disabled={uploading} onChange={(event) => void handleUpload(event.target.files?.[0])} type="file" />
+          </label>
+          <label className="background-upload">
+            <ImageIcon width="20" height="20" />
+            <span>
+              <strong>{uploading ? "正在保存..." : "自动选择本地图集"}</strong>
+              <small>选择文件夹，最多 40 张，自动无缝轮换</small>
+            </span>
+            <input accept="image/*" disabled={uploading} multiple onChange={(event) => void handleGalleryUpload(event.target.files)} ref={(input) => input?.setAttribute("webkitdirectory", "")} type="file" />
+          </label>
+        </div>
       </section>
 
       <section className="background-section" aria-labelledby="url-background-heading">

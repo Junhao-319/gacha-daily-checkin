@@ -17,9 +17,10 @@ export interface Game {
 }
 
 export interface BackgroundPreference {
-  type: "wallpaper" | "upload" | "url";
+  type: "wallpaper" | "upload" | "url" | "gallery";
   mediaType: BackgroundMediaType;
   value: string;
+  assetIds?: string[];
   title?: string;
 }
 

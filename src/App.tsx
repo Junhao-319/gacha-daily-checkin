@@ -388,9 +388,6 @@ export default function App() {
         onApply={(background) => {
           if (backgroundDialogTarget) {
             dispatch({ type: 'set-background', target: backgroundDialogTarget, background });
-            if (backgroundDialogTarget !== 'global') {
-              dispatch({ type: 'set-background', target: 'global', background });
-            }
           }
         }}
         onClose={() => setBackgroundDialogTarget(null)}

@@ -197,7 +197,7 @@ function parseBackgroundPreference(value: unknown): BackgroundPreference | null 
   }
 
   if (
-    (value.type !== "wallpaper" && value.type !== "upload" && value.type !== "url") ||
+    (value.type !== "wallpaper" && value.type !== "upload" && value.type !== "url" && value.type !== "gallery") ||
     (value.mediaType !== "image" && value.mediaType !== "video") ||
     typeof value.value !== "string" ||
     value.value.length === 0
@@ -205,10 +205,18 @@ function parseBackgroundPreference(value: unknown): BackgroundPreference | null 
     throw new Error("背景设置缺少必要字段");
   }
 
+  const assetIds = Array.isArray(value.assetIds)
+    ? value.assetIds.filter((assetId): assetId is string => typeof assetId === "string" && assetId.length > 0)
+    : undefined;
+  if (value.type === "gallery" && (!assetIds || assetIds.length === 0)) {
+    throw new Error("本图集缺少图片资源");
+  }
+
   return {
     type: value.type,
     mediaType: value.mediaType,
     value: value.value,
+    assetIds,
     title: typeof value.title === "string" ? value.title : undefined
   };
 }

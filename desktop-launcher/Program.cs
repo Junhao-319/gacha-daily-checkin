@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Collections.Generic;
 using Microsoft.Win32;
@@ -23,6 +24,7 @@ namespace GachaDailyLauncher
         private const string BasePath = "/gacha-daily-checkin-desktop/";
         private const string HealthPath = "/health";
         private const string AppUrl = "http://127.0.0.1:47832/gacha-daily-checkin-desktop/";
+        private const string UserEndfieldArtPath = @"F:\OIP-C.webp";
         private static TcpListener listener;
         private static NotifyIcon trayIcon;
         private static volatile bool running;
@@ -143,6 +145,12 @@ namespace GachaDailyLauncher
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr windowHandle);
 
+        [DllImport("user32.dll")]
+        private static extern bool ReleaseCapture();
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SendMessage(IntPtr windowHandle, int message, int wParam, int lParam);
+
         private static void ActivateExistingWindow()
         {
             IntPtr window = FindWindow(null, "次元日常");
@@ -155,7 +163,9 @@ namespace GachaDailyLauncher
 
         private sealed class MainForm : Form
         {
+            private const int ResizeBorder = 7;
             private readonly Microsoft.Web.WebView2.WinForms.WebView2 webView;
+            private readonly Panel titleBar;
 
             public MainForm()
             {
@@ -163,7 +173,14 @@ namespace GachaDailyLauncher
                 StartPosition = FormStartPosition.CenterScreen;
                 MinimumSize = new Size(920, 640);
                 ClientSize = new Size(1180, 780);
-                BackColor = Color.FromArgb(7, 17, 31);
+                FormBorderStyle = FormBorderStyle.None;
+                ControlBox = false;
+                MaximizeBox = true;
+                MinimizeBox = true;
+                Padding = new Padding(1);
+                BackColor = Color.FromArgb(61, 137, 245);
+                DoubleBuffered = true;
+                SetStyle(ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer, true);
                 try
                 {
                     Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
@@ -171,6 +188,45 @@ namespace GachaDailyLauncher
                 catch
                 {
                 }
+
+                Panel shell = new Panel();
+                shell.Dock = DockStyle.Fill;
+                shell.BackColor = Color.FromArgb(8, 19, 34);
+                shell.Padding = new Padding(0);
+
+                titleBar = new Panel();
+                titleBar.Dock = DockStyle.Top;
+                titleBar.Height = 42;
+                titleBar.BackColor = Color.FromArgb(8, 19, 34);
+                titleBar.Paint += TitleBarPaint;
+                titleBar.MouseDown += BeginWindowDrag;
+                titleBar.MouseDoubleClick += ToggleMaximize;
+
+                Label title = new Label();
+                title.AutoSize = false;
+                title.Dock = DockStyle.Fill;
+                title.Padding = new Padding(16, 0, 0, 0);
+                title.Text = "次元日常";
+                title.TextAlign = ContentAlignment.MiddleLeft;
+                title.ForeColor = Color.FromArgb(236, 247, 255);
+                title.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
+                title.Cursor = Cursors.SizeAll;
+                title.MouseDown += BeginWindowDrag;
+                title.MouseDoubleClick += ToggleMaximize;
+
+                FlowLayoutPanel windowActions = new FlowLayoutPanel();
+                windowActions.Dock = DockStyle.Right;
+                windowActions.Width = 138;
+                windowActions.FlowDirection = FlowDirection.LeftToRight;
+                windowActions.WrapContents = false;
+                windowActions.Padding = new Padding(0);
+                windowActions.BackColor = Color.Transparent;
+                windowActions.Controls.Add(CreateWindowButton("—", delegate { WindowState = FormWindowState.Minimized; }));
+                windowActions.Controls.Add(CreateWindowButton("□", delegate { ToggleMaximize(null, EventArgs.Empty); }));
+                windowActions.Controls.Add(CreateWindowButton("×", delegate { Close(); }, true));
+
+                titleBar.Controls.Add(title);
+                titleBar.Controls.Add(windowActions);
 
                 webView = new Microsoft.Web.WebView2.WinForms.WebView2();
                 webView.Dock = DockStyle.Fill;
@@ -183,11 +239,123 @@ namespace GachaDailyLauncher
                     )
                 };
                 webView.CoreWebView2InitializationCompleted += WebViewInitializationCompleted;
-                Controls.Add(webView);
+                shell.Controls.Add(webView);
+
+                Controls.Add(shell);
+                Controls.Add(titleBar);
+                Resize += delegate { ApplyRoundedCorners(); };
                 Shown += delegate
                 {
+                    ApplyRoundedCorners();
                     webView.Source = new Uri(AppUrl);
                 };
+            }
+
+            private Button CreateWindowButton(string text, EventHandler click, bool closeButton = false)
+            {
+                Button button = new Button();
+                button.Width = 44;
+                button.Height = 41;
+                button.Margin = new Padding(0);
+                button.FlatStyle = FlatStyle.Flat;
+                button.FlatAppearance.BorderSize = 0;
+                button.FlatAppearance.MouseOverBackColor = closeButton
+                    ? Color.FromArgb(220, 58, 74)
+                    : Color.FromArgb(28, 52, 82);
+                button.BackColor = Color.Transparent;
+                button.ForeColor = Color.FromArgb(224, 235, 247);
+                button.Font = new Font("Segoe UI Symbol", 10F, FontStyle.Regular);
+                button.Text = text;
+                button.TabStop = false;
+                button.Click += click;
+                return button;
+            }
+
+            private void TitleBarPaint(object sender, PaintEventArgs eventArgs)
+            {
+                using (LinearGradientBrush brush = new LinearGradientBrush(
+                    titleBar.ClientRectangle,
+                    Color.FromArgb(9, 22, 40),
+                    Color.FromArgb(18, 39, 68),
+                    0F
+                ))
+                {
+                    eventArgs.Graphics.FillRectangle(brush, titleBar.ClientRectangle);
+                }
+                using (Pen pen = new Pen(Color.FromArgb(38, 81, 122)))
+                {
+                    eventArgs.Graphics.DrawLine(pen, 0, titleBar.Height - 1, titleBar.Width, titleBar.Height - 1);
+                }
+            }
+
+            private void BeginWindowDrag(object sender, MouseEventArgs eventArgs)
+            {
+                if (eventArgs.Button != MouseButtons.Left)
+                {
+                    return;
+                }
+                ReleaseCapture();
+                SendMessage(Handle, 0xA1, 0x2, 0);
+            }
+
+            private void ToggleMaximize(object sender, EventArgs eventArgs)
+            {
+                WindowState = WindowState == FormWindowState.Maximized
+                    ? FormWindowState.Normal
+                    : FormWindowState.Maximized;
+                ApplyRoundedCorners();
+            }
+
+            private void ApplyRoundedCorners()
+            {
+                if (WindowState != FormWindowState.Normal || Width <= 0 || Height <= 0)
+                {
+                    Region = null;
+                    return;
+                }
+
+                int radius = 18;
+                using (GraphicsPath path = new GraphicsPath())
+                {
+                    path.AddArc(0, 0, radius, radius, 180, 90);
+                    path.AddArc(Width - radius - 1, 0, radius, radius, 270, 90);
+                    path.AddArc(Width - radius - 1, Height - radius - 1, radius, radius, 0, 90);
+                    path.AddArc(0, Height - radius - 1, radius, radius, 90, 90);
+                    path.CloseFigure();
+                    Region previous = Region;
+                    Region = new Region(path);
+                    if (previous != null)
+                    {
+                        previous.Dispose();
+                    }
+                }
+            }
+
+            protected override void WndProc(ref Message message)
+            {
+                const int WM_NCHITTEST = 0x84;
+                if (message.Msg == WM_NCHITTEST && WindowState == FormWindowState.Normal)
+                {
+                    base.WndProc(ref message);
+                    int x = unchecked((short)((long)message.LParam & 0xFFFF));
+                    int y = unchecked((short)(((long)message.LParam >> 16) & 0xFFFF));
+                    Point point = PointToClient(new Point(x, y));
+                    bool left = point.X <= ResizeBorder;
+                    bool right = point.X >= ClientSize.Width - ResizeBorder;
+                    bool top = point.Y <= ResizeBorder;
+                    bool bottom = point.Y >= ClientSize.Height - ResizeBorder;
+
+                    if (left && top) message.Result = (IntPtr)13;
+                    else if (right && top) message.Result = (IntPtr)14;
+                    else if (left && bottom) message.Result = (IntPtr)16;
+                    else if (right && bottom) message.Result = (IntPtr)17;
+                    else if (left) message.Result = (IntPtr)10;
+                    else if (right) message.Result = (IntPtr)11;
+                    else if (top) message.Result = (IntPtr)12;
+                    else if (bottom) message.Result = (IntPtr)15;
+                    return;
+                }
+                base.WndProc(ref message);
             }
 
             private void WebViewInitializationCompleted(
@@ -410,7 +578,12 @@ namespace GachaDailyLauncher
                         relativePath = "index.html";
                     }
 
-                    byte[] body = ReadResource(relativePath);
+                    bool useUserEndfieldArt =
+                        relativePath.Equals("game-art/arknights-endfield-v2.jpg", StringComparison.OrdinalIgnoreCase) &&
+                        File.Exists(UserEndfieldArtPath);
+                    byte[] body = useUserEndfieldArt
+                        ? File.ReadAllBytes(UserEndfieldArtPath)
+                        : ReadResource(relativePath);
                     if (body == null && Path.GetExtension(relativePath).Length == 0)
                     {
                         relativePath = "index.html";
@@ -426,7 +599,15 @@ namespace GachaDailyLauncher
                     string extraHeaders = relativePath == "sw.js"
                         ? "Service-Worker-Allowed: " + BasePath + "\r\n"
                         : String.Empty;
-                    WriteResponse(stream, 200, "OK", GetContentType(relativePath), body, headOnly, extraHeaders);
+                    WriteResponse(
+                        stream,
+                        200,
+                        "OK",
+                        useUserEndfieldArt ? "image/webp" : GetContentType(relativePath),
+                        body,
+                        headOnly,
+                        extraHeaders
+                    );
                 }
                 catch (Exception exception)
                 {
