@@ -1,4 +1,5 @@
 export type ThemeMode = "system" | "light" | "dark";
+export type BackgroundMediaType = "image" | "video";
 
 export interface GameTask {
   id: string;
@@ -15,18 +16,42 @@ export interface Game {
   tasks: GameTask[];
 }
 
-export interface PersistedStateV2 {
-  version: 2;
+export interface BackgroundPreference {
+  type: "wallpaper" | "upload" | "url";
+  mediaType: BackgroundMediaType;
+  value: string;
+  title?: string;
+}
+
+export interface BackgroundSettings {
+  global: BackgroundPreference | null;
+  games: Record<string, BackgroundPreference>;
+}
+
+export interface PersistedStateV3 {
+  version: 3;
   games: Game[];
   checkIns: Record<string, Record<string, Record<string, string>>>;
   theme: ThemeMode;
+  backgrounds: BackgroundSettings;
 }
 
 export interface StorageLoadResult {
-  state: PersistedStateV2;
+  state: PersistedStateV3;
   error: string | null;
+}
+
+export interface WallpaperItem {
+  id: string;
+  title: string;
+  type: string;
+  mediaType: BackgroundMediaType;
+  mediaUrl: string;
+  previewUrl: string;
 }
 
 export interface DetectedGamesResponse {
   detected: string[];
 }
+
+export type PersistedState = PersistedStateV3;

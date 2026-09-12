@@ -113,4 +113,18 @@ describe("app state", () => {
 
     expect(renamed.games.at(-1)!.tasks.map((task) => task.name)).toEqual(["完成今日日常", "改名后的任务"]);
   });
+
+  it("stores separate global and per-game background preferences", () => {
+    const initial = createInitialState(NOW);
+    const preference = { type: "url" as const, mediaType: "image" as const, value: "https://example.com/bg.jpg" };
+    const globalState = appStateReducer(initial, { type: "set-background", target: "global", background: preference });
+    const gameState = appStateReducer(globalState, {
+      type: "set-background",
+      target: { gameId: initial.games[0].id },
+      background: { ...preference, mediaType: "video", value: "https://example.com/bg.mp4" }
+    });
+
+    expect(gameState.backgrounds.global?.value).toBe("https://example.com/bg.jpg");
+    expect(gameState.backgrounds.games[initial.games[0].id].mediaType).toBe("video");
+  });
 });

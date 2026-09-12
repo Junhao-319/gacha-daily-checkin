@@ -43,7 +43,7 @@ export const GAME_CATALOG: GameCatalogEntry[] = [
     publisher: "米哈游",
     genre: "回合制",
     accent: "#7a7cf4",
-    artwork: "game-art/honkai-star-rail.webp",
+    artwork: "game-art/honkai-star-rail-v2.jpg",
     tasks: ["完成每日实训", "消耗开拓力", "领取派遣奖励", "收取邮件与支援奖励"]
   },
   {

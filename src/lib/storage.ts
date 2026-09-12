@@ -1,9 +1,10 @@
 import { createInitialState } from "./state";
 import { createTasksForCatalog, findCatalogEntryByName, getCatalogEntry } from "./gameCatalog";
-import type { Game, GameTask, PersistedStateV2, StorageLoadResult, ThemeMode } from "../types";
+import type { BackgroundPreference, BackgroundSettings, Game, GameTask, PersistedStateV3, StorageLoadResult, ThemeMode } from "../types";
 
-export const STORAGE_KEY = "gacha-daily-checkin:v2";
-export const LEGACY_STORAGE_KEY = "gacha-daily-checkin:v1";
+export const STORAGE_KEY = "gacha-daily-checkin:v3";
+export const LEGACY_STORAGE_KEY = "gacha-daily-checkin:v2";
+export const V1_STORAGE_KEY = "gacha-daily-checkin:v1";
 const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 export interface StorageLike {
@@ -78,7 +79,7 @@ function parseV2Game(value: unknown, index: number, now: Date): Game {
   };
 }
 
-function parseV2CheckIns(value: unknown): PersistedStateV2["checkIns"] {
+function parseV2CheckIns(value: unknown): PersistedStateV3["checkIns"] {
   if (value === undefined) {
     return {};
   }
@@ -87,7 +88,7 @@ function parseV2CheckIns(value: unknown): PersistedStateV2["checkIns"] {
     throw new Error("打卡记录格式不正确");
   }
 
-  const checkIns: PersistedStateV2["checkIns"] = {};
+  const checkIns: PersistedStateV3["checkIns"] = {};
 
   for (const [gameId, gameRecords] of Object.entries(value)) {
     if (!isRecord(gameRecords)) {
@@ -113,7 +114,7 @@ function parseV2CheckIns(value: unknown): PersistedStateV2["checkIns"] {
   return checkIns;
 }
 
-function migrateV1(parsed: Record<string, unknown>, now: Date): PersistedStateV2 {
+function migrateV1(parsed: Record<string, unknown>, now: Date): PersistedStateV3 {
   const gamesValue = parsed.games ?? [];
   if (!Array.isArray(gamesValue)) {
     throw new Error("旧版游戏列表格式不正确");
@@ -149,7 +150,7 @@ function migrateV1(parsed: Record<string, unknown>, now: Date): PersistedStateV2
     };
   });
 
-  const checkIns: PersistedStateV2["checkIns"] = {};
+  const checkIns: PersistedStateV3["checkIns"] = {};
   if (parsed.checkIns !== undefined && !isRecord(parsed.checkIns)) {
     throw new Error("旧版打卡记录格式不正确");
   }
@@ -178,14 +179,95 @@ function migrateV1(parsed: Record<string, unknown>, now: Date): PersistedStateV2
       : "system";
 
   return {
-    version: 2,
+    version: 3,
     games,
     checkIns,
-    theme
+    theme,
+    backgrounds: { global: null, games: {} }
   };
 }
 
-export function parsePersistedState(raw: string, now = new Date()): PersistedStateV2 {
+function parseBackgroundPreference(value: unknown): BackgroundPreference | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (!isRecord(value)) {
+    throw new Error("背景设置格式不正确");
+  }
+
+  if (
+    (value.type !== "wallpaper" && value.type !== "upload" && value.type !== "url") ||
+    (value.mediaType !== "image" && value.mediaType !== "video") ||
+    typeof value.value !== "string" ||
+    value.value.length === 0
+  ) {
+    throw new Error("背景设置缺少必要字段");
+  }
+
+  return {
+    type: value.type,
+    mediaType: value.mediaType,
+    value: value.value,
+    title: typeof value.title === "string" ? value.title : undefined
+  };
+}
+
+function parseBackgrounds(value: unknown): BackgroundSettings {
+  if (value === undefined) {
+    return { global: null, games: {} };
+  }
+
+  if (!isRecord(value)) {
+    throw new Error("背景设置格式不正确");
+  }
+
+  const gamesValue = value.games ?? {};
+  if (!isRecord(gamesValue)) {
+    throw new Error("游戏背景设置格式不正确");
+  }
+
+  const games: Record<string, BackgroundPreference> = {};
+  for (const [gameId, preference] of Object.entries(gamesValue)) {
+    const parsedPreference = parseBackgroundPreference(preference);
+    if (parsedPreference) {
+      games[gameId] = parsedPreference;
+    }
+  }
+
+  return {
+    global: parseBackgroundPreference(value.global),
+    games
+  };
+}
+
+function migrateV2(parsed: Record<string, unknown>, now: Date): PersistedStateV3 {
+  const gamesValue = parsed.games ?? [];
+  if (!Array.isArray(gamesValue)) {
+    throw new Error("游戏列表格式不正确");
+  }
+
+  const games = gamesValue.map((game, index) => parseV2Game(game, index, now));
+  const gameIds = new Set(games.map((game) => game.id));
+  if (gameIds.size !== games.length) {
+    throw new Error("游戏列表包含重复 ID");
+  }
+
+  const theme: ThemeMode =
+    parsed.theme === "light" || parsed.theme === "dark" || parsed.theme === "system"
+      ? parsed.theme
+      : "system";
+
+  return {
+    version: 3,
+    games,
+    checkIns: parseV2CheckIns(parsed.checkIns),
+    theme,
+    backgrounds: { global: null, games: {} }
+  };
+}
+
+export function parsePersistedState(raw: string, now = new Date()): PersistedStateV3 {
   const parsed: unknown = JSON.parse(raw);
 
   if (!isRecord(parsed)) {
@@ -196,7 +278,11 @@ export function parsePersistedState(raw: string, now = new Date()): PersistedSta
     return migrateV1(parsed, now);
   }
 
-  if (parsed.version !== 2) {
+  if (parsed.version === 2) {
+    return migrateV2(parsed, now);
+  }
+
+  if (parsed.version !== 3) {
     throw new Error("本地数据版本不受支持");
   }
 
@@ -217,13 +303,13 @@ export function parsePersistedState(raw: string, now = new Date()): PersistedSta
       : "system";
 
   return {
-    version: 2,
+    version: 3,
     games,
     checkIns: parseV2CheckIns(parsed.checkIns),
-    theme
+    theme,
+    backgrounds: parseBackgrounds(parsed.backgrounds)
   };
 }
-
 export function getSafeBrowserStorage(): StorageLike | null {
   if (typeof window === "undefined") {
     return null;
@@ -248,7 +334,7 @@ export function loadPersistedState(
   }
 
   try {
-    const raw = storage.getItem(STORAGE_KEY) ?? storage.getItem(LEGACY_STORAGE_KEY);
+    const raw = storage.getItem(STORAGE_KEY) ?? storage.getItem(LEGACY_STORAGE_KEY) ?? storage.getItem(V1_STORAGE_KEY);
     if (!raw) {
       return { state: createInitialState(now), error: null };
     }
@@ -262,7 +348,7 @@ export function loadPersistedState(
   }
 }
 
-export function savePersistedState(state: PersistedStateV2, storage: StorageLike | null): string | null {
+export function savePersistedState(state: PersistedStateV3, storage: StorageLike | null): string | null {
   if (!storage) {
     return "当前浏览器无法访问本地存储，打卡记录将无法保存。";
   }

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AddGameDialog } from "./components/AddGameDialog";
+import { BackgroundDialog } from "./components/BackgroundDialog";
+import { GlobalBackground } from "./components/GlobalBackground";
 import { GameCard } from "./components/GameCard";
 import { GameDetail } from "./components/GameDetail";
 import { HistoryHeatmap } from "./components/HistoryHeatmap";
@@ -7,6 +9,7 @@ import {
   CalendarIcon,
   CheckIcon,
   CloseIcon,
+  ImageIcon,
   MonitorIcon,
   MoonIcon,
   PlusIcon,
@@ -19,6 +22,7 @@ import { StorageErrorScreen } from "./components/StorageErrorScreen";
 import { TaskManagerDialog } from "./components/TaskManagerDialog";
 import { useAppState } from "./hooks/useAppState";
 import { useDetectedGames } from "./hooks/useDetectedGames";
+import { useWallpapers } from "./hooks/useWallpapers";
 import { useTheme } from "./hooks/useTheme";
 import { useTodayKey } from "./hooks/useTodayKey";
 import { formatDateHeading, fromDateKey } from "./lib/date";
@@ -52,6 +56,7 @@ function findCatalogEntry(catalogId: string): GameCatalogEntry | null {
 export default function App() {
   const { state, dispatch, storageError, resetData } = useAppState();
   const detectedCatalogIds = useDetectedGames();
+  const { wallpapers, loading: wallpapersLoading } = useWallpapers();
   const todayKey = useTodayKey();
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
@@ -59,6 +64,7 @@ export default function App() {
   const [manageDialogOpen, setManageDialogOpen] = useState(false);
   const [taskManagerOpen, setTaskManagerOpen] = useState(false);
   const [detectionNotice, setDetectionNotice] = useState<string | null>(null);
+  const [backgroundDialogTarget, setBackgroundDialogTarget] = useState<'global' | { gameId: string } | null>(null);
   const detectionHandled = useRef(false);
 
   useTheme(state.theme);
@@ -248,6 +254,7 @@ export default function App() {
   );
   return (
     <div className="app-shell">
+      <GlobalBackground activeGames={activeGames} preference={state.backgrounds.global} />
       <div className="ambient-glow ambient-glow-one" aria-hidden="true" />
       <div className="ambient-glow ambient-glow-two" aria-hidden="true" />
 
@@ -273,6 +280,15 @@ export default function App() {
         </a>
 
         <nav className="topbar-actions" aria-label="页面操作">
+          <button
+            aria-label="更换页面背景"
+            className="icon-button"
+            onClick={() => setBackgroundDialogTarget('global')}
+            title="更换页面背景"
+            type="button"
+          >
+            <ImageIcon />
+          </button>
           <button
             aria-label={`当前主题：${getThemeLabel(state.theme)}，点击切换`}
             className="icon-button"
@@ -301,6 +317,8 @@ export default function App() {
             game={selectedGame}
             onBack={() => setSelectedGameId(null)}
             onManageTasks={() => setTaskManagerOpen(true)}
+            backgroundPreference={state.backgrounds.games[selectedGame.id] ?? null}
+            onChangeBackground={() => setBackgroundDialogTarget({ gameId: selectedGame.id })}
             onToggleTask={(taskId) => toggleTask(selectedGame.id, taskId)}
             state={state}
           />
@@ -351,6 +369,25 @@ export default function App() {
           selectedGame && dispatch({ type: "rename-task", gameId: selectedGame.id, taskId, name })
         }
         open={taskManagerOpen}
+      />
+      <BackgroundDialog
+        current={
+          backgroundDialogTarget === 'global'
+            ? state.backgrounds.global
+            : backgroundDialogTarget
+              ? state.backgrounds.games[backgroundDialogTarget.gameId] ?? null
+              : null
+        }
+        onApply={(background) => {
+          if (backgroundDialogTarget) {
+            dispatch({ type: 'set-background', target: backgroundDialogTarget, background });
+          }
+        }}
+        onClose={() => setBackgroundDialogTarget(null)}
+        open={backgroundDialogTarget !== null}
+        targetLabel={backgroundDialogTarget === 'global' ? '今日页背景' : selectedGame?.name ?? '游戏背景'}
+        wallpapers={wallpapers}
+        wallpapersLoading={wallpapersLoading}
       />
     </div>
   );

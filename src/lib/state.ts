@@ -1,6 +1,6 @@
 import { createInitialGames } from "./games";
 import { toDateKey } from "./date";
-import type { Game, PersistedStateV2, ThemeMode } from "../types";
+import type { BackgroundPreference, Game, PersistedStateV3, ThemeMode } from "../types";
 
 export type AppAction =
   | { type: "toggle-task"; gameId: string; taskId: string; dateKey: string; completedAt: string }
@@ -12,14 +12,19 @@ export type AppAction =
   | { type: "rename-task"; gameId: string; taskId: string; name: string }
   | { type: "remove-task"; gameId: string; taskId: string }
   | { type: "set-theme"; theme: ThemeMode }
-  | { type: "reset"; state: PersistedStateV2 };
+  | { type: "set-background"; target: "global" | { gameId: string }; background: BackgroundPreference | null }
+  | { type: "reset"; state: PersistedStateV3 };
 
-export function createInitialState(now = new Date()): PersistedStateV2 {
+export function createInitialState(now = new Date()): PersistedStateV3 {
   return {
-    version: 2,
+    version: 3,
     games: createInitialGames(now),
     checkIns: {},
-    theme: "system"
+    theme: "system",
+    backgrounds: {
+      global: null,
+      games: {}
+    }
   };
 }
 
@@ -27,7 +32,7 @@ function replaceGame(games: Game[], gameId: string, update: (game: Game) => Game
   return games.map((game) => (game.id === gameId ? update(game) : game));
 }
 
-export function appStateReducer(state: PersistedStateV2, action: AppAction): PersistedStateV2 {
+export function appStateReducer(state: PersistedStateV3, action: AppAction): PersistedStateV3 {
   switch (action.type) {
     case "toggle-task": {
       const currentRecords = state.checkIns[action.gameId] ?? {};
@@ -138,21 +143,38 @@ export function appStateReducer(state: PersistedStateV2, action: AppAction): Per
     case "set-theme":
       return { ...state, theme: action.theme };
 
+    case "set-background": {
+      if (action.target === "global") {
+        return {
+          ...state,
+          backgrounds: { ...state.backgrounds, global: action.background }
+        };
+      }
+
+      const nextGames = { ...state.backgrounds.games };
+      if (action.background) {
+        nextGames[action.target.gameId] = action.background;
+      } else {
+        delete nextGames[action.target.gameId];
+      }
+      return { ...state, backgrounds: { ...state.backgrounds, games: nextGames } };
+    }
+
     case "reset":
       return action.state;
   }
 }
 
-export function getActiveGames(state: PersistedStateV2): Game[] {
+export function getActiveGames(state: PersistedStateV3): Game[] {
   return state.games.filter((game) => game.archivedAt === null);
 }
 
-export function getArchivedGames(state: PersistedStateV2): Game[] {
+export function getArchivedGames(state: PersistedStateV3): Game[] {
   return state.games.filter((game) => game.archivedAt !== null);
 }
 
 export function isTaskCompleted(
-  state: PersistedStateV2,
+  state: PersistedStateV3,
   gameId: string,
   taskId: string,
   dateKey: string
@@ -161,7 +183,7 @@ export function isTaskCompleted(
 }
 
 export function getTaskCompletionTime(
-  state: PersistedStateV2,
+  state: PersistedStateV3,
   gameId: string,
   taskId: string,
   dateKey: string
@@ -180,7 +202,7 @@ export function getApplicableTasks(game: Game, dateKey: string): Game["tasks"] {
 }
 
 export function getTaskProgress(
-  state: PersistedStateV2,
+  state: PersistedStateV3,
   game: Game,
   dateKey: string
 ): { completed: number; total: number; ratio: number } {
@@ -196,25 +218,25 @@ export function getTaskProgress(
   };
 }
 
-export function isGameCompleted(state: PersistedStateV2, game: Game, dateKey: string): boolean {
+export function isGameCompleted(state: PersistedStateV3, game: Game, dateKey: string): boolean {
   const progress = getTaskProgress(state, game, dateKey);
   return progress.total > 0 && progress.completed === progress.total;
 }
 
-export function getCompletedGameCount(state: PersistedStateV2, dateKey: string): number {
+export function getCompletedGameCount(state: PersistedStateV3, dateKey: string): number {
   return state.games.reduce(
     (count, game) => count + (isGameCompleted(state, game, dateKey) ? 1 : 0),
     0
   );
 }
 
-export function getCompletedTaskCount(state: PersistedStateV2, dateKey: string): number {
+export function getCompletedTaskCount(state: PersistedStateV3, dateKey: string): number {
   return state.games.reduce(
     (count, game) => count + getTaskProgress(state, game, dateKey).completed,
     0
   );
 }
 
-export function getTotalTaskCount(state: PersistedStateV2): number {
+export function getTotalTaskCount(state: PersistedStateV3): number {
   return state.games.reduce((count, game) => count + game.tasks.length, 0);
 }

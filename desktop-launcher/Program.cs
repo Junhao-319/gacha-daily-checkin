@@ -10,6 +10,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Web.Script.Serialization;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -355,6 +357,18 @@ namespace GachaDailyLauncher
                         return;
                     }
 
+                    if (path.Equals(BasePath + "api/wallpapers", StringComparison.OrdinalIgnoreCase))
+                    {
+                        WriteText(stream, 200, "OK", "application/json; charset=utf-8", GetWallpapersJson(), headOnly);
+                        return;
+                    }
+
+                    if (path.StartsWith(BasePath + "api/wallpaper-file", StringComparison.OrdinalIgnoreCase))
+                    {
+                        HandleWallpaperFileRequest(stream, requestParts[1], headOnly);
+                        return;
+                    }
+
                     if (path == "/" || path == "/gacha-daily-checkin")
                     {
                         WriteRedirect(stream, BasePath);
@@ -404,6 +418,305 @@ namespace GachaDailyLauncher
             }
         }
 
+        private static List<WallpaperRecord> cachedWallpapers;
+
+        private static string GetWallpapersJson()
+        {
+            List<WallpaperRecord> wallpapers = GetWallpapers();
+            System.Text.StringBuilder json = new System.Text.StringBuilder();
+            json.Append("{\"wallpapers\":[");
+            for (int index = 0; index < wallpapers.Count; index++)
+            {
+                WallpaperRecord wallpaper = wallpapers[index];
+                if (index > 0)
+                {
+                    json.Append(',');
+                }
+                json.Append("{\"id\":\"");
+                json.Append(JsonEscape(wallpaper.Id));
+                json.Append("\",\"title\":\"");
+                json.Append(JsonEscape(wallpaper.Title));
+                json.Append("\",\"type\":\"");
+                json.Append(JsonEscape(wallpaper.Type));
+                json.Append("\",\"mediaType\":\"");
+                json.Append(wallpaper.MediaType);
+                json.Append("\",\"mediaUrl\":\"");
+                json.Append(JsonEscape(BasePath + "api/wallpaper-file?id=" + Uri.EscapeDataString(wallpaper.Id) + "&kind=media"));
+                json.Append("\",\"previewUrl\":\"");
+                json.Append(JsonEscape(BasePath + "api/wallpaper-file?id=" + Uri.EscapeDataString(wallpaper.Id) + "&kind=preview"));
+                json.Append("\"}");
+            }
+            json.Append("]}");
+            return json.ToString();
+        }
+
+        private static List<WallpaperRecord> GetWallpapers()
+        {
+            if (cachedWallpapers != null)
+            {
+                return cachedWallpapers;
+            }
+
+            List<WallpaperRecord> wallpapers = new List<WallpaperRecord>();
+            foreach (string libraryRoot in GetSteamLibraryRoots())
+            {
+                string workshopRoot = Path.Combine(libraryRoot, "steamapps", "workshop", "content", "431960");
+                if (!Directory.Exists(workshopRoot))
+                {
+                    continue;
+                }
+
+                foreach (string wallpaperDirectory in Directory.GetDirectories(workshopRoot))
+                {
+                    string projectPath = Path.Combine(wallpaperDirectory, "project.json");
+                    if (!File.Exists(projectPath))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        string projectJson = File.ReadAllText(projectPath);
+                        JavaScriptSerializer serializer = new JavaScriptSerializer();
+                        Dictionary<string, object> project = serializer.Deserialize<Dictionary<string, object>>(projectJson);
+                        string title = GetDictionaryString(project, "title");
+                        string type = GetDictionaryString(project, "type");
+                        string projectFile = GetDictionaryString(project, "file");
+                        string previewFile = GetDictionaryString(project, "preview");
+                        string mediaPath = null;
+                        string mediaType = null;
+
+                        string projectMediaPath = Path.Combine(wallpaperDirectory, projectFile);
+                        if (type == "video" && File.Exists(projectMediaPath) && IsVideoFile(projectFile))
+                        {
+                            mediaPath = projectMediaPath;
+                            mediaType = "video";
+                        }
+                        else if (type == "web" && File.Exists(Path.Combine(wallpaperDirectory, "video.webm")))
+                        {
+                            mediaPath = Path.Combine(wallpaperDirectory, "video.webm");
+                            mediaType = "video";
+                        }
+
+                        string previewPath = Path.Combine(wallpaperDirectory, previewFile);
+                        if (!File.Exists(previewPath))
+                        {
+                            previewPath = FindFirstPreviewFile(wallpaperDirectory);
+                        }
+
+                        if (mediaPath == null && previewPath != null && IsImageFile(previewPath))
+                        {
+                            mediaPath = previewPath;
+                            mediaType = "image";
+                        }
+
+                        if (String.IsNullOrEmpty(title))
+                        {
+                            title = Path.GetFileName(wallpaperDirectory);
+                        }
+
+                        if (mediaPath != null && File.Exists(mediaPath) && previewPath != null && File.Exists(previewPath))
+                        {
+                            string wallpaperId = Path.GetFileName(wallpaperDirectory);
+                            bool alreadyAdded = wallpapers.Find(delegate(WallpaperRecord item)
+                            {
+                                return item.Id == wallpaperId;
+                            }) != null;
+                            if (!alreadyAdded)
+                            {
+                                wallpapers.Add(new WallpaperRecord
+                                {
+                                    Id = wallpaperId,
+                                    Title = title,
+                                    Type = type,
+                                    MediaPath = mediaPath,
+                                    MediaType = mediaType,
+                                    PreviewPath = previewPath
+                                });
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            wallpapers.Sort(delegate(WallpaperRecord left, WallpaperRecord right)
+            {
+                return String.Compare(left.Title, right.Title, StringComparison.CurrentCultureIgnoreCase);
+            });
+            cachedWallpapers = wallpapers;
+            return cachedWallpapers;
+        }
+
+        private static List<string> GetSteamLibraryRoots()
+        {
+            HashSet<string> roots = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using (RegistryKey steamKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Valve\\Steam"))
+            {
+                string steamPath = steamKey == null ? null : steamKey.GetValue("SteamPath") as string;
+                if (!String.IsNullOrEmpty(steamPath))
+                {
+                    roots.Add(Path.GetFullPath(steamPath));
+                }
+            }
+
+            roots.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Steam"));
+            roots.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Steam"));
+            foreach (string drive in new string[] { "C:\\", "D:\\", "E:\\", "F:\\" })
+            {
+                roots.Add(Path.Combine(drive, "SteamLibrary"));
+            }
+
+            List<string> result = new List<string>();
+            foreach (string root in roots)
+            {
+                if (Directory.Exists(root))
+                {
+                    result.Add(root);
+                    string libraryFile = Path.Combine(root, "steamapps", "libraryfolders.vdf");
+                    if (File.Exists(libraryFile))
+                    {
+                        string vdf = File.ReadAllText(libraryFile);
+                        foreach (Match match in Regex.Matches(vdf, "\"path\"\\s*\"((?:\\\\.|[^\"])*)\"", RegexOptions.IgnoreCase))
+                        {
+                            string libraryPath = match.Groups[1].Value.Replace("\\\\", "\\");
+                            if (Directory.Exists(libraryPath) && !result.Contains(libraryPath))
+                            {
+                                result.Add(libraryPath);
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        private static string GetDictionaryString(Dictionary<string, object> values, string key)
+        {
+            object value;
+            return values.TryGetValue(key, out value) && value != null ? Convert.ToString(value) : String.Empty;
+        }
+
+        private static string ReadJsonString(string json, string propertyName)
+        {
+            Match match = Regex.Match(
+                json,
+                "\"" + Regex.Escape(propertyName) + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"",
+                RegexOptions.IgnoreCase
+            );
+            return match.Success ? UnescapeJson(match.Groups[1].Value) : String.Empty;
+        }
+
+        private static string UnescapeJson(string value)
+        {
+            return value.Replace("\\\\", "\\").Replace("\\\"", "\"").Replace("\\/", "/");
+        }
+
+        private static string JsonEscape(string value)
+        {
+            if (value == null)
+            {
+                return String.Empty;
+            }
+            return value.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n");
+        }
+
+        private static bool IsVideoFile(string path)
+        {
+            string extension = Path.GetExtension(path).ToLowerInvariant();
+            return extension == ".mp4" || extension == ".webm";
+        }
+
+        private static bool IsImageFile(string path)
+        {
+            string extension = Path.GetExtension(path).ToLowerInvariant();
+            return extension == ".jpg" || extension == ".jpeg" || extension == ".png" || extension == ".webp" || extension == ".gif";
+        }
+
+        private static string FindFirstPreviewFile(string directory)
+        {
+            foreach (string extension in new string[] { "*.gif", "*.jpg", "*.jpeg", "*.png", "*.webp" })
+            {
+                string[] files = Directory.GetFiles(directory, extension);
+                if (files.Length > 0)
+                {
+                    return files[0];
+                }
+            }
+            return null;
+        }
+        private static void HandleWallpaperFileRequest(NetworkStream stream, string rawTarget, bool headOnly)
+        {
+            Uri uri = new Uri("http://localhost" + rawTarget);
+            string id = GetQueryValue(uri.Query, "id");
+            string kind = GetQueryValue(uri.Query, "kind");
+            WallpaperRecord wallpaper = GetWallpapers().Find(delegate(WallpaperRecord item)
+            {
+                return item.Id == id;
+            });
+
+            if (wallpaper == null)
+            {
+                WriteText(stream, 404, "Not Found", "text/plain; charset=utf-8", "Wallpaper not found", headOnly);
+                return;
+            }
+
+            string filePath = kind == "preview" ? wallpaper.PreviewPath : wallpaper.MediaPath;
+            if (String.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                WriteText(stream, 404, "Not Found", "text/plain; charset=utf-8", "Wallpaper file not found", headOnly);
+                return;
+            }
+
+            WriteFileResponse(stream, filePath, GetContentType(filePath), headOnly);
+        }
+
+        private static string GetQueryValue(string query, string key)
+        {
+            if (String.IsNullOrEmpty(query))
+            {
+                return String.Empty;
+            }
+
+            foreach (string pair in query.TrimStart('?').Split('&'))
+            {
+                string[] parts = pair.Split(new char[] { '=' }, 2);
+                if (parts.Length == 2 && Uri.UnescapeDataString(parts[0]) == key)
+                {
+                    return Uri.UnescapeDataString(parts[1]);
+                }
+            }
+            return String.Empty;
+        }
+
+        private static void WriteFileResponse(NetworkStream stream, string filePath, string contentType, bool headOnly)
+        {
+            FileInfo file = new FileInfo(filePath);
+            string header =
+                "HTTP/1.1 200 OK\r\n" +
+                "Content-Type: " + contentType + "\r\n" +
+                "Content-Length: " + file.Length + "\r\n" +
+                "Cache-Control: no-cache, no-store, must-revalidate\r\n" +
+                "Accept-Ranges: none\r\n" +
+                "Connection: close\r\n\r\n";
+            byte[] headerBytes = Encoding.ASCII.GetBytes(header);
+            stream.Write(headerBytes, 0, headerBytes.Length);
+
+            if (!headOnly)
+            {
+                using (FileStream fileStream = File.OpenRead(filePath))
+                {
+                    byte[] buffer = new byte[128 * 1024];
+                    int read;
+                    while ((read = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        stream.Write(buffer, 0, read);
+                    }
+                }
+            }
+        }
         private static string GetDetectedGamesJson()
         {
             List<string> detected = new List<string>();
@@ -561,6 +874,16 @@ namespace GachaDailyLauncher
             }
         }
 
+        private sealed class WallpaperRecord
+        {
+            public string Id;
+            public string Title;
+            public string Type;
+            public string MediaPath;
+            public string MediaType;
+            public string PreviewPath;
+        }
+
         private sealed class DetectionRule
         {
             public string Id { get; private set; }
@@ -636,9 +959,12 @@ namespace GachaDailyLauncher
                 case ".css": return "text/css; charset=utf-8";
                 case ".svg": return "image/svg+xml";
                 case ".png": return "image/png";
+                case ".gif": return "image/gif";
                 case ".jpg":
                 case ".jpeg": return "image/jpeg";
                 case ".webp": return "image/webp";
+                case ".mp4": return "video/mp4";
+                case ".webm": return "video/webm";
                 case ".ico": return "image/x-icon";
                 case ".webmanifest": return "application/manifest+json; charset=utf-8";
                 case ".json": return "application/json; charset=utf-8";

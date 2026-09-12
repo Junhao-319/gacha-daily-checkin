@@ -1,5 +1,5 @@
 {
-  "version": "eddfd492a71a3b1e",
+  "version": "a5525d8f11b765fd",
   "images": {
     "aether-gazer.jpg": {
       "sha256": "48852f06c0ed34324806b86ab13933098ce0991556a1c16e60544bdb1efd948d",
@@ -37,9 +37,9 @@
       "sha256": "b5565c62521b77327905aea15f5cacac94975c9555dab5571608a6a8206afb1e",
       "bytes": 975864
     },
-    "honkai-star-rail.webp": {
-      "sha256": "f30725758261111cd314250bddc2a29a4385218220a16232c005836281052a0d",
-      "bytes": 109810
+    "honkai-star-rail-v2.jpg": {
+      "sha256": "6ff538f723f49b27dfde980620b5e7ba60cacf9c8675e401110c9a810e595e05",
+      "bytes": 92823
     },
     "infinite-nikki.jpg": {
       "sha256": "d2ad5fc335be9dbce5d34a3cd6315baade02f34a5fb2364bbed3e09211ef2b3a",

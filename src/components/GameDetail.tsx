@@ -1,17 +1,20 @@
-import { BackIcon, CheckIcon, ListIcon, SparkleIcon } from "./Icons";
+import { BackIcon, CheckIcon, ImageIcon, ListIcon, SparkleIcon } from "./Icons";
+import { BackgroundMedia } from "./BackgroundMedia";
 import { getArtworkUrls, useArtworkVersion } from "../lib/artworkSync";
 import { formatCompletionTime, formatDateHeading, fromDateKey } from "../lib/date";
 import { getCatalogEntryForGame } from "../lib/gameCatalog";
 import { getGameAccent, getGameArtworkPath, getGameInitial } from "../lib/games";
 import { getTaskCompletionTime, getTaskProgress } from "../lib/state";
-import type { Game, PersistedStateV2 } from "../types";
+import type { BackgroundPreference, Game, PersistedStateV3 } from "../types";
 
 interface GameDetailProps {
-  state: PersistedStateV2;
+  state: PersistedStateV3;
   game: Game;
   dateKey: string;
   onBack: () => void;
   onManageTasks: () => void;
+  backgroundPreference: BackgroundPreference | null;
+  onChangeBackground: () => void;
   onToggleTask: (taskId: string) => void;
 }
 
@@ -21,6 +24,8 @@ export function GameDetail({
   dateKey,
   onBack,
   onManageTasks,
+  backgroundPreference,
+  onChangeBackground,
   onToggleTask
 }: GameDetailProps) {
   const progress = getTaskProgress(state, game, dateKey);
@@ -42,6 +47,7 @@ export function GameDetail({
       }
     >
       <div className="game-detail-backdrop" aria-hidden="true" />
+      <BackgroundMedia className="game-detail-custom-media" preference={backgroundPreference} />
       <div className="game-detail-shade" aria-hidden="true" />
 
       <header className="game-detail-header">
@@ -49,7 +55,13 @@ export function GameDetail({
           <BackIcon width="18" height="18" />
           返回今日清单
         </button>
-        <div className="detail-date">{formatDateHeading(fromDateKey(dateKey))}</div>
+        <div className="detail-header-actions">
+          <button className="detail-background-button" onClick={onChangeBackground} type="button">
+            <ImageIcon width="17" height="17" />
+            更换背景
+          </button>
+          <div className="detail-date">{formatDateHeading(fromDateKey(dateKey))}</div>
+        </div>
       </header>
 
       <div className="game-detail-hero">

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createInitialState } from "./state";
 import {
-  LEGACY_STORAGE_KEY,
+  V1_STORAGE_KEY,
   loadPersistedState,
   parsePersistedState,
   savePersistedState,
@@ -63,10 +63,10 @@ describe("storage", () => {
       },
       theme: "dark"
     });
-    const storage = createMemoryStorage({ [LEGACY_STORAGE_KEY]: legacy });
+    const storage = createMemoryStorage({ [V1_STORAGE_KEY]: legacy });
     const state = loadPersistedState(storage).state;
 
-    expect(state.version).toBe(2);
+    expect(state.version).toBe(3);
     expect(state.games[0].name).toBe("崩坏：星穹铁道");
     expect(Object.values(state.checkIns["default-1"]["2026-09-12"])).toHaveLength(
       state.games[0].tasks.length

@@ -7,10 +7,10 @@ import {
 } from "../lib/date";
 import { getGameColor, getGameInitial } from "../lib/games";
 import { getCompletedGameCount, getCompletedTaskCount, getTaskProgress } from "../lib/state";
-import type { PersistedStateV2 } from "../types";
+import type { PersistedStateV3 } from "../types";
 
 interface HistoryHeatmapProps {
-  state: PersistedStateV2;
+  state: PersistedStateV3;
   todayKey: string;
   selectedDate: string;
   onSelectDate: (dateKey: string) => void;

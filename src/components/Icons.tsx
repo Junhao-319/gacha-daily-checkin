@@ -57,6 +57,15 @@ export function TrashIcon(props: IconProps) {
     </IconBase>
   );
 }
+export function ImageIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect height="16" rx="2.5" stroke="currentColor" strokeWidth="1.8" width="18" x="3" y="4" />
+      <circle cx="8" cy="9" r="1.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="m5 17 4.5-4.5 3.2 3.2 2.3-2.3 4 3.6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </IconBase>
+  );
+}
 export function SettingsIcon(props: IconProps) {
   return (
     <IconBase {...props}>
