@@ -19,10 +19,10 @@ namespace GachaDailyLauncher
 {
     internal static class Program
     {
-        private const int Port = 47831;
+        private const int Port = 47832;
         private const string BasePath = "/gacha-daily-checkin-desktop/";
         private const string HealthPath = "/health";
-        private const string AppUrl = "http://127.0.0.1:47831/gacha-daily-checkin-desktop/";
+        private const string AppUrl = "http://127.0.0.1:47832/gacha-daily-checkin-desktop/";
         private static TcpListener listener;
         private static NotifyIcon trayIcon;
         private static volatile bool running;
@@ -31,7 +31,7 @@ namespace GachaDailyLauncher
         private static void Main()
         {
             bool createdNew;
-            using (Mutex mutex = new Mutex(true, "Local\\GachaDailyCheckinDesktopLauncher", out createdNew))
+            using (Mutex mutex = new Mutex(true, "Local\\GachaDailyCheckinDesktopLauncherV2", out createdNew))
             {
                 if (!createdNew)
                 {
