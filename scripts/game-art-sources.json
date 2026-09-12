@@ -10,6 +10,13 @@
   "nikke": {
     "url": "https://game.gtimg.cn/images/nikke/act/welfare202505/new_swip_img1.jpg",
     "file": "nikke.jpg"
+  },  "home-miku-2024": {
+    "url": "https://magicalmirai.com/2024/images/og.jpg",
+    "file": "home-miku-magical-mirai-2024.jpg"
+  },
+  "home-miku-2023": {
+    "url": "https://magicalmirai.com/2023/images/og.jpg",
+    "file": "home-miku-magical-mirai-2023.jpg"
   },  "home-miku-2026": {
     "url": "https://magicalmirai.com/2026/images/og.jpg",
     "file": "home-miku-magical-mirai-2026.jpg"

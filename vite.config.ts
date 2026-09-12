@@ -13,7 +13,7 @@ export default defineConfig({
       manifest: {
         name: "次元日常",
         short_name: "次元日常",
-        description: "简洁的二游日常任务打卡工具。",
+        description: "简洁的多游戏日常任务打卡工具。",
         lang: "zh-CN",
         start_url: "./",
         scope: "./",

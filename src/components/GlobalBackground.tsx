@@ -13,7 +13,9 @@ interface GlobalBackgroundProps {
 
 const HOME_ARTWORK_PATHS = [
   "game-art/home-miku-magical-mirai-2026.jpg",
-  "game-art/home-miku-magical-mirai-2025.jpg"
+  "game-art/home-miku-magical-mirai-2025.jpg",
+  "game-art/home-miku-magical-mirai-2024.jpg",
+  "game-art/home-miku-magical-mirai-2023.jpg"
 ];
 
 function shuffle<T>(items: T[]): T[] {
@@ -40,6 +42,7 @@ function LocalImageSlide({ localUrl, remoteUrl }: { localUrl: string | null; rem
     <img
       alt=""
       className="global-background-slide is-active"
+      decoding="async"
       onError={() => {
         if (localUrl && source !== localUrl) {
           setSource(localUrl);
@@ -67,6 +70,16 @@ export function GlobalBackground({ preference, activeGames, backgrounds }: Globa
       };
     });
 
+    const globalSlide = preference
+      ? [{
+          id: "saved-home-background",
+          preference,
+          localUrl: null as string | null,
+          remoteUrl: null as string | null,
+          videoUrl: null as string | null
+        }]
+      : [];
+
     const gameSlides = activeGames.map((game) => {
       const gamePreference = backgrounds.games[game.id] ?? null;
       const { localUrl, remoteUrl } = getArtworkUrls(
@@ -82,22 +95,22 @@ export function GlobalBackground({ preference, activeGames, backgrounds }: Globa
       };
     });
 
-    return shuffle([...homeSlides, ...gameSlides]).filter(
+    return shuffle([...homeSlides, ...globalSlide, ...gameSlides]).filter(
       (slide) => slide.preference || slide.localUrl || slide.remoteUrl || slide.videoUrl
     );
-  }, [activeGameKey, backgrounds, remoteArtworkVersion]);
+  }, [activeGameKey, backgrounds, preference, remoteArtworkVersion]);
 
   useEffect(() => {
-    if (preference || slides.length < 2) {
+    if (slides.length < 2) {
       return;
     }
 
     const timer = window.setInterval(() => {
       setActiveSlide((current) => (current + 1) % slides.length);
-    }, 12_000);
+    }, 10_000);
 
     return () => window.clearInterval(timer);
-  }, [preference, slides.length]);
+  }, [slides.length]);
 
   useEffect(() => {
     if (activeSlide >= slides.length) {
@@ -109,13 +122,8 @@ export function GlobalBackground({ preference, activeGames, backgrounds }: Globa
 
   return (
     <div className="global-background" aria-hidden="true">
-      {preference ? (
-        <BackgroundMedia className="global-background-media" preference={preference} />
-      ) : active?.preference ? (
-        <BackgroundMedia
-          className={`global-background-slide ${active.preference.mediaType === "video" ? "" : "is-active"}`}
-          preference={active.preference}
-        />
+      {active?.preference ? (
+        <BackgroundMedia className="global-background-slide is-active" preference={active.preference} />
       ) : active?.videoUrl ? (
         <video
           autoPlay

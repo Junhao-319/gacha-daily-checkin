@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AddGameDialog } from "./components/AddGameDialog";
 import { BackgroundDialog } from "./components/BackgroundDialog";
+import { ClickEffect } from "./components/ClickEffect";
 import { GlobalBackground } from "./components/GlobalBackground";
 import { GameCard } from "./components/GameCard";
 import { GameDetail } from "./components/GameDetail";
@@ -257,6 +258,7 @@ export default function App() {
   );
   return (
     <div className="app-shell">
+      <ClickEffect />
       <GlobalBackground activeGames={activeGames} backgrounds={state.backgrounds} preference={state.backgrounds.global} />
       <div className="ambient-glow ambient-glow-one" aria-hidden="true" />
       <div className="ambient-glow ambient-glow-two" aria-hidden="true" />
@@ -265,7 +267,7 @@ export default function App() {
         <a
           className="brand"
           href="./"
-          aria-label="二游日常打卡首页"
+          aria-label="次元日常首页"
           onClick={(event) => {
             if (selectedGame) {
               event.preventDefault();

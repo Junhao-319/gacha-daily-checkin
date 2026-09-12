@@ -1501,7 +1501,7 @@ button.heat-cell:hover {
   z-index: -1;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(4, 11, 24, 0.34), rgba(4, 11, 24, 0.64) 48%, rgba(4, 11, 24, 0.97)),
+    linear-gradient(180deg, rgba(4, 11, 24, 0.18), rgba(4, 11, 24, 0.48) 48%, rgba(4, 11, 24, 0.88)),
     radial-gradient(circle at 80% 12%, color-mix(in srgb, var(--game-color) 25%, transparent), transparent 38%);
 }
 
@@ -2117,7 +2117,7 @@ button.heat-cell:hover {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--page-bg) 28%, transparent), color-mix(in srgb, var(--page-bg) 82%, transparent) 70%, var(--page-bg)),
+    linear-gradient(180deg, color-mix(in srgb, var(--page-bg) 8%, transparent), color-mix(in srgb, var(--page-bg) 52%, transparent) 70%, color-mix(in srgb, var(--page-bg) 82%, transparent)),
     radial-gradient(circle at 50% 15%, transparent, color-mix(in srgb, var(--page-bg) 42%, transparent));
 }
 
@@ -2410,6 +2410,7 @@ button.heat-cell:hover {
 }
 
 .global-background-slide.is-active {
+  opacity: 0.9;
   animation: wallpaper-pan 14s ease-in-out infinite alternate;
 }
 
@@ -2625,5 +2626,59 @@ button.heat-cell:hover {
   .game-card,
   .task-row {
     transition-duration: 80ms;
+  }
+}
+/* 点击特效 */
+.click-effect-layer {
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.click-burst {
+  --click-color: #22d3ee;
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border: 2px solid var(--click-color);
+  border-radius: 50%;
+  box-shadow: 0 0 16px color-mix(in srgb, var(--click-color) 70%, transparent);
+  animation: click-ring 720ms ease-out forwards;
+}
+
+.click-burst i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--click-color);
+  box-shadow: 0 0 10px var(--click-color);
+  animation: click-particle 680ms ease-out forwards;
+}
+
+.click-burst i:nth-child(1) { --particle-x: 30px; --particle-y: 0; }
+.click-burst i:nth-child(2) { --particle-x: 0; --particle-y: 30px; }
+.click-burst i:nth-child(3) { --particle-x: -28px; --particle-y: 8px; }
+.click-burst i:nth-child(4) { --particle-x: 8px; --particle-y: -28px; }
+
+@keyframes click-ring {
+  from { opacity: 0.95; transform: scale(0.35); }
+  to { opacity: 0; transform: scale(3.2); }
+}
+
+@keyframes click-particle {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(calc(-50% + var(--particle-x)), calc(-50% + var(--particle-y))) scale(0.2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .click-burst,
+  .click-burst i {
+    animation-duration: 0.01ms;
   }
 }
