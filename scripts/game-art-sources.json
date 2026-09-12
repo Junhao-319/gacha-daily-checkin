@@ -1,0 +1,82 @@
+{
+  "honkai-impact-3rd": {
+    "url": "https://act-webstatic.mihoyo.com/puzzle/bh3/pz_pmEtnQnIB1/resource/puzzle/2026/07/20/311a6c767c9aa0ef3febc5f1631e2e59_5912638023656874024.png",
+    "file": "honkai-impact-3rd.png"
+  },
+  "genshin-impact": {
+    "url": "https://act-webstatic.mihoyo.com/puzzle/hk4e/pz_UCqADEdfCx/resource/puzzle/2026/07/20/43588f4f8e91ac19c7d41b6dcffe9377_2867863359748170517.png?x-oss-process=image/format,webp/quality,Q_90",
+    "file": "genshin-impact.webp"
+  },
+  "honkai-star-rail": {
+    "url": "https://act-webstatic.mihoyo.com/puzzle/hkrpg/pz_0gxSMfsWEq/resource/puzzle/2026/08/03/67b7b7c703546706a8cf0b5dd53b9c1c_288336105050408185.png?x-oss-process=image/format,webp/quality,Q_90",
+    "file": "honkai-star-rail.webp"
+  },
+  "zenless-zone-zero": {
+    "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4162040/3676e4aea45abf0636d68c65e10166e0c380b36a/capsule_231x87_alt_assets_1_schinese.jpg?t=1788905636",
+    "file": "zenless-zone-zero.jpg"
+  },
+  "wuthering-waves": {
+    "url": "https://cdn.akamai.steamstatic.com/steam/apps/3513350/library_hero.jpg",
+    "file": "wuthering-waves.jpg"
+  },
+  "punishing-gray-raven": {
+    "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4125930/3f61d1e3cca7d009b55cbb7300d064fc801ab770/capsule_231x87.jpg?t=1780375411",
+    "file": "punishing-gray-raven.jpg"
+  },
+  "arknights": {
+    "url": "https://web.hycdn.cn/upload/image/20260903/c2bbbe8c0996b87002fc450dba1ba697.jpg",
+    "file": "arknights.jpg"
+  },
+  "arknights-endfield": {
+    "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/2f1ad116d0e21bb8a7930cd4874a30f9c2534005/capsule_231x87_schinese.jpg?t=1788302000",
+    "file": "arknights-endfield.jpg"
+  },
+  "blue-archive": {
+    "url": "https://cdn.akamai.steamstatic.com/steam/apps/3557620/library_hero.jpg",
+    "file": "blue-archive.jpg"
+  },
+  "azur-lane": {
+    "url": "https://i0.hdslb.com/bfs/game-static/273dcf5ebd72916a6c55498bcf4f5672aaf9a028.png",
+    "file": "azur-lane.png"
+  },
+  "girls-frontline-2": {
+    "url": "https://cdn.akamai.steamstatic.com/steam/apps/3347400/library_hero.jpg",
+    "file": "girls-frontline-2.jpg"
+  },
+  "reverse-1999": {
+    "url": "https://cdn.akamai.steamstatic.com/steam/apps/3092660/library_hero.jpg",
+    "file": "reverse-1999.jpg"
+  },
+  "snowbreak": {
+    "url": "https://cdn.akamai.steamstatic.com/steam/apps/2668080/library_hero.jpg",
+    "file": "snowbreak.jpg"
+  },
+  "tower-of-fantasy": {
+    "url": "https://cdn.akamai.steamstatic.com/steam/apps/2064650/library_hero.jpg",
+    "file": "tower-of-fantasy.jpg"
+  },
+  "aether-gazer": {
+    "url": "https://skzy.ys4fun.com/images/%E6%B7%B1%E7%A9%BA%E4%B9%8B%E7%9C%BC.jpg",
+    "file": "aether-gazer.jpg"
+  },
+  "infinite-nikki": {
+    "url": "https://cdn.akamai.steamstatic.com/steam/apps/3164330/library_hero.jpg",
+    "file": "infinite-nikki.jpg"
+  },
+  "love-and-deepspace": {
+    "url": "https://assets.papegames.com/nikkiweb/papegame/deepspacecn/material/oq7sq7ij/share.png",
+    "file": "love-and-deepspace.png"
+  },
+  "onmyoji": {
+    "url": "https://cdn.akamai.steamstatic.com/steam/apps/551170/library_hero.jpg",
+    "file": "onmyoji.jpg"
+  },
+  "fate-grand-order": {
+    "url": "https://i0.hdslb.com/bfs/game-static/c4fea066c3792f6187084b89713150d39472608e.jpg",
+    "file": "fate-grand-order.jpg"
+  },
+  "princess-connect": {
+    "url": "https://priconne-redive.jp/ele-wp/wp-content/themes/redive/images/shared/ogp.jpg?rel20180615",
+    "file": "princess-connect.jpg"
+  }
+}

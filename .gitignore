@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.pnpm-store/
+*.tsbuildinfo
+.vite/
+coverage/
+.DS_Store
+desktop-launcher/build/
+.tools/
