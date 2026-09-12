@@ -24,7 +24,6 @@ namespace GachaDailyLauncher
         private const string BasePath = "/gacha-daily-checkin-desktop/";
         private const string HealthPath = "/health";
         private const string AppUrl = "http://127.0.0.1:47832/gacha-daily-checkin-desktop/";
-        private const string UserEndfieldArtPath = @"F:\OIP-C.webp";
         private static TcpListener listener;
         private static NotifyIcon trayIcon;
         private static volatile bool running;
@@ -164,6 +163,7 @@ namespace GachaDailyLauncher
         private sealed class MainForm : Form
         {
             private const int ResizeBorder = 7;
+            private const float WindowCornerRadius = 24F;
             private readonly Microsoft.Web.WebView2.WinForms.WebView2 webView;
             private readonly Panel titleBar;
 
@@ -257,6 +257,10 @@ namespace GachaDailyLauncher
                 Button button = new Button();
                 button.Width = 46;
                 button.Height = 45;
+                using (GraphicsPath buttonPath = CreateRoundedPath(new RectangleF(2F, 2F, button.Width - 4F, button.Height - 4F), 10F))
+                {
+                    button.Region = new Region(buttonPath);
+                }
                 button.Margin = new Padding(0);
                 button.FlatStyle = FlatStyle.Flat;
                 button.FlatAppearance.BorderSize = 0;
@@ -277,18 +281,33 @@ namespace GachaDailyLauncher
             private void FormChromePaint(object sender, PaintEventArgs eventArgs)
             {
                 eventArgs.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                eventArgs.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                using (GraphicsPath outerPath = CreateRoundedPath(
+                    new RectangleF(0.75F, 0.75F, Width - 1.5F, Height - 1.5F),
+                    WindowCornerRadius - 0.75F
+                ))
                 using (LinearGradientBrush brush = new LinearGradientBrush(
                     ClientRectangle,
                     Color.FromArgb(34, 211, 238),
                     Color.FromArgb(168, 85, 247),
                     32F
                 ))
-                using (Pen pen = new Pen(brush, 1.4F))
+                using (Pen pen = new Pen(brush, 1.45F))
                 {
-                    eventArgs.Graphics.DrawRectangle(pen, 0, 0, Width - 1, Height - 1);
+                    pen.LineJoin = LineJoin.Round;
+                    eventArgs.Graphics.DrawPath(pen, outerPath);
+                }
+
+                using (GraphicsPath innerPath = CreateRoundedPath(
+                    new RectangleF(2F, 2F, Width - 4F, Height - 4F),
+                    WindowCornerRadius - 2F
+                ))
+                using (Pen innerPen = new Pen(Color.FromArgb(42, 255, 255, 255), 0.8F))
+                {
+                    innerPen.LineJoin = LineJoin.Round;
+                    eventArgs.Graphics.DrawPath(innerPen, innerPath);
                 }
             }
-
             private void TitleBarPaint(object sender, PaintEventArgs eventArgs)
             {
                 eventArgs.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -342,29 +361,42 @@ namespace GachaDailyLauncher
 
             private void ApplyRoundedCorners()
             {
+                Region previous = Region;
                 if (WindowState != FormWindowState.Normal || Width <= 0 || Height <= 0)
                 {
                     Region = null;
-                    return;
-                }
-
-                int radius = 18;
-                using (GraphicsPath path = new GraphicsPath())
-                {
-                    path.AddArc(0, 0, radius, radius, 180, 90);
-                    path.AddArc(Width - radius - 1, 0, radius, radius, 270, 90);
-                    path.AddArc(Width - radius - 1, Height - radius - 1, radius, radius, 0, 90);
-                    path.AddArc(0, Height - radius - 1, radius, radius, 90, 90);
-                    path.CloseFigure();
-                    Region previous = Region;
-                    Region = new Region(path);
                     if (previous != null)
                     {
                         previous.Dispose();
                     }
+                    return;
+                }
+
+                using (GraphicsPath path = CreateRoundedPath(
+                    new RectangleF(0F, 0F, Width, Height),
+                    WindowCornerRadius
+                ))
+                {
+                    Region = new Region(path);
+                }
+
+                if (previous != null)
+                {
+                    previous.Dispose();
                 }
             }
 
+            private static GraphicsPath CreateRoundedPath(RectangleF bounds, float radius)
+            {
+                float diameter = Math.Min(radius * 2F, Math.Min(bounds.Width, bounds.Height));
+                GraphicsPath path = new GraphicsPath();
+                path.AddArc(bounds.Left, bounds.Top, diameter, diameter, 180F, 90F);
+                path.AddArc(bounds.Right - diameter, bounds.Top, diameter, diameter, 270F, 90F);
+                path.AddArc(bounds.Right - diameter, bounds.Bottom - diameter, diameter, diameter, 0F, 90F);
+                path.AddArc(bounds.Left, bounds.Bottom - diameter, diameter, diameter, 90F, 90F);
+                path.CloseFigure();
+                return path;
+            }
             protected override void WndProc(ref Message message)
             {
                 const int WM_NCHITTEST = 0x84;
@@ -612,12 +644,7 @@ namespace GachaDailyLauncher
                         relativePath = "index.html";
                     }
 
-                    bool useUserEndfieldArt =
-                        relativePath.Equals("game-art/arknights-endfield-v2.jpg", StringComparison.OrdinalIgnoreCase) &&
-                        File.Exists(UserEndfieldArtPath);
-                    byte[] body = useUserEndfieldArt
-                        ? File.ReadAllBytes(UserEndfieldArtPath)
-                        : ReadResource(relativePath);
+                    byte[] body = ReadResource(relativePath);
                     if (body == null && Path.GetExtension(relativePath).Length == 0)
                     {
                         relativePath = "index.html";
@@ -633,15 +660,7 @@ namespace GachaDailyLauncher
                     string extraHeaders = relativePath == "sw.js"
                         ? "Service-Worker-Allowed: " + BasePath + "\r\n"
                         : String.Empty;
-                    WriteResponse(
-                        stream,
-                        200,
-                        "OK",
-                        useUserEndfieldArt ? "image/webp" : GetContentType(relativePath),
-                        body,
-                        headOnly,
-                        extraHeaders
-                    );
+                    WriteResponse(stream, 200, "OK", GetContentType(relativePath), body, headOnly, extraHeaders);
                 }
                 catch (Exception exception)
                 {

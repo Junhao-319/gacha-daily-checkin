@@ -1,5 +1,5 @@
 {
-  "version": "d9c225812de22841",
+  "version": "0cec64b1b5df3046",
   "images": {
     "aether-gazer.jpg": {
       "sha256": "48852f06c0ed34324806b86ab13933098ce0991556a1c16e60544bdb1efd948d",
@@ -12,6 +12,10 @@
     "arknights-endfield-v2.jpg": {
       "sha256": "10cf3d83cb190bb30dc58198253099f6bf6d5f0b0863a258394e58537eb96070",
       "bytes": 1444406
+    },
+    "arknights-endfield-v3.webp": {
+      "sha256": "25d9de1808634ec7383e2401be6286b11f6049d921b503e1cfa469b6279f3941",
+      "bytes": 51478
     },
     "arknights.jpg": {
       "sha256": "364808c8921b70b37a3a0ba68f656428ef13161425965bddbdf6ab7433b917ec",

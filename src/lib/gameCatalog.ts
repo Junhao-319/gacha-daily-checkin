@@ -104,7 +104,7 @@ export const GAME_CATALOG: GameCatalogEntry[] = [
     publisher: "鹰角网络",
     genre: "3D 冒险",
     accent: "#d4ae46",
-    artwork: "game-art/arknights-endfield-v2.jpg",
+    artwork: "game-art/arknights-endfield-v3.webp",
     tasks: ["完成日常委托", "消耗理智", "收取基建产出", "领取邮件与活动奖励"]
   },
   {
