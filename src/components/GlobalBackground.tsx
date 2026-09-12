@@ -7,9 +7,27 @@ interface GlobalBackgroundProps {
   preference: BackgroundPreference | null;
 }
 
-const ANIME_GALLERY_PATHS = [
+const DEFAULT_BACKGROUND_PATHS = [
   "anime-gallery/sina-forest.jpg",
-  "anime-gallery/sina-sakura.jpg"
+  "anime-gallery/sina-sakura.jpg",
+  "game-art/honkai-star-rail-v3.png",
+  "game-art/honkai-impact-3rd.png",
+  "game-art/genshin-impact.webp",
+  "game-art/wuthering-waves.jpg",
+  "game-art/arknights-endfield-v2.jpg",
+  "game-art/arknights.jpg",
+  "game-art/blue-archive.jpg",
+  "game-art/girls-frontline-2.jpg",
+  "game-art/reverse-1999.jpg",
+  "game-art/snowbreak.jpg",
+  "game-art/tower-of-fantasy.jpg",
+  "game-art/aether-gazer.jpg",
+  "game-art/infinite-nikki.jpg",
+  "game-art/love-and-deepspace.png",
+  "game-art/onmyoji.jpg",
+  "game-art/fate-grand-order.jpg",
+  "game-art/princess-connect.jpg",
+  "game-art/nikke.jpg"
 ];
 
 function shuffle<T>(items: T[]): T[] {
@@ -48,20 +66,19 @@ function LocalImageSlide({ localUrl, remoteUrl }: { localUrl: string | null; rem
     return null;
   }
 
+  const handleError = () => {
+    if (localUrl && source !== localUrl) {
+      setSource(localUrl);
+    } else if (remoteUrl && source !== remoteUrl) {
+      setSource(remoteUrl);
+    }
+  };
+
   return (
-    <img
-      alt=""
-      className="global-background-slide is-active"
-      decoding="async"
-      onError={() => {
-        if (localUrl && source !== localUrl) {
-          setSource(localUrl);
-        } else if (remoteUrl && source !== remoteUrl) {
-          setSource(remoteUrl);
-        }
-      }}
-      src={source}
-    />
+    <span className="global-background-slide adaptive-media-frame is-active background-media-layer">
+      <img alt="" aria-hidden="true" className="adaptive-media-backdrop" decoding="async" onError={handleError} src={source} />
+      <img alt="" className="adaptive-media-foreground" decoding="async" onError={handleError} src={source} />
+    </span>
   );
 }
 
@@ -75,9 +92,9 @@ export function GlobalBackground({ preference }: GlobalBackgroundProps) {
     }
 
     return shuffle(
-      ANIME_GALLERY_PATHS.map((path, index) => {
+      DEFAULT_BACKGROUND_PATHS.map((path, index) => {
         const { localUrl, remoteUrl } = getArtworkUrls(path, remoteArtworkVersion);
-        return { id: `anime-${index}`, preference: null, localUrl, remoteUrl };
+        return { id: "background-" + index, preference: null, localUrl, remoteUrl };
       }).filter((slide) => slide.localUrl || slide.remoteUrl)
     );
   }, [preference, remoteArtworkVersion]);

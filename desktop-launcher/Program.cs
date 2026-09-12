@@ -178,7 +178,7 @@ namespace GachaDailyLauncher
                 MaximizeBox = true;
                 MinimizeBox = true;
                 Padding = new Padding(1);
-                BackColor = Color.FromArgb(61, 137, 245);
+                BackColor = Color.FromArgb(42, 75, 118);
                 DoubleBuffered = true;
                 SetStyle(ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer, true);
                 try
@@ -196,7 +196,7 @@ namespace GachaDailyLauncher
 
                 titleBar = new Panel();
                 titleBar.Dock = DockStyle.Top;
-                titleBar.Height = 42;
+                titleBar.Height = 46;
                 titleBar.BackColor = Color.FromArgb(8, 19, 34);
                 titleBar.Paint += TitleBarPaint;
                 titleBar.MouseDown += BeginWindowDrag;
@@ -206,7 +206,7 @@ namespace GachaDailyLauncher
                 title.AutoSize = false;
                 title.Dock = DockStyle.Fill;
                 title.Padding = new Padding(16, 0, 0, 0);
-                title.Text = "次元日常";
+                title.Text = "✦  次元日常";
                 title.TextAlign = ContentAlignment.MiddleLeft;
                 title.ForeColor = Color.FromArgb(236, 247, 255);
                 title.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
@@ -243,6 +243,7 @@ namespace GachaDailyLauncher
 
                 Controls.Add(shell);
                 Controls.Add(titleBar);
+                Paint += FormChromePaint;
                 Resize += delegate { ApplyRoundedCorners(); };
                 Shown += delegate
                 {
@@ -254,8 +255,8 @@ namespace GachaDailyLauncher
             private Button CreateWindowButton(string text, EventHandler click, bool closeButton = false)
             {
                 Button button = new Button();
-                button.Width = 44;
-                button.Height = 41;
+                button.Width = 46;
+                button.Height = 45;
                 button.Margin = new Padding(0);
                 button.FlatStyle = FlatStyle.Flat;
                 button.FlatAppearance.BorderSize = 0;
@@ -266,28 +267,61 @@ namespace GachaDailyLauncher
                 button.ForeColor = Color.FromArgb(224, 235, 247);
                 button.Font = new Font("Segoe UI Symbol", 10F, FontStyle.Regular);
                 button.Text = text;
+                button.Cursor = Cursors.Hand;
                 button.TabStop = false;
+                button.UseVisualStyleBackColor = false;
                 button.Click += click;
                 return button;
             }
 
+            private void FormChromePaint(object sender, PaintEventArgs eventArgs)
+            {
+                eventArgs.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                using (LinearGradientBrush brush = new LinearGradientBrush(
+                    ClientRectangle,
+                    Color.FromArgb(34, 211, 238),
+                    Color.FromArgb(168, 85, 247),
+                    32F
+                ))
+                using (Pen pen = new Pen(brush, 1.4F))
+                {
+                    eventArgs.Graphics.DrawRectangle(pen, 0, 0, Width - 1, Height - 1);
+                }
+            }
+
             private void TitleBarPaint(object sender, PaintEventArgs eventArgs)
             {
+                eventArgs.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (LinearGradientBrush brush = new LinearGradientBrush(
                     titleBar.ClientRectangle,
-                    Color.FromArgb(9, 22, 40),
-                    Color.FromArgb(18, 39, 68),
+                    Color.FromArgb(7, 17, 31),
+                    Color.FromArgb(18, 42, 72),
                     0F
                 ))
                 {
                     eventArgs.Graphics.FillRectangle(brush, titleBar.ClientRectangle);
                 }
-                using (Pen pen = new Pen(Color.FromArgb(38, 81, 122)))
+
+                using (LinearGradientBrush accent = new LinearGradientBrush(
+                    new Rectangle(0, 0, Math.Max(1, titleBar.Width), 3),
+                    Color.FromArgb(34, 211, 238),
+                    Color.FromArgb(168, 85, 247),
+                    0F
+                ))
                 {
-                    eventArgs.Graphics.DrawLine(pen, 0, titleBar.Height - 1, titleBar.Width, titleBar.Height - 1);
+                    eventArgs.Graphics.FillRectangle(accent, 0, 0, titleBar.Width, 3);
+                }
+
+                using (LinearGradientBrush divider = new LinearGradientBrush(
+                    new Rectangle(0, Math.Max(1, titleBar.Height - 1), Math.Max(1, titleBar.Width), 1),
+                    Color.FromArgb(52, 116, 158),
+                    Color.FromArgb(94, 67, 162),
+                    0F
+                ))
+                {
+                    eventArgs.Graphics.FillRectangle(divider, 0, titleBar.Height - 1, titleBar.Width, 1);
                 }
             }
-
             private void BeginWindowDrag(object sender, MouseEventArgs eventArgs)
             {
                 if (eventArgs.Button != MouseButtons.Left)

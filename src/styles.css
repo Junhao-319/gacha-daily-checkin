@@ -2639,46 +2639,143 @@ button.heat-cell:hover {
 
 .click-burst {
   --click-color: #22d3ee;
+  --click-color-alt: #a78bfa;
   position: fixed;
-  width: 12px;
-  height: 12px;
-  margin: -6px 0 0 -6px;
-  border: 2px solid var(--click-color);
-  border-radius: 50%;
-  box-shadow: 0 0 16px color-mix(in srgb, var(--click-color) 70%, transparent);
-  animation: click-ring 720ms ease-out forwards;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  animation: click-life 900ms ease-out forwards;
 }
+
+.click-halo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  margin: -13px;
+  border: 1.5px solid var(--click-color);
+  border-radius: 50%;
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--click-color) 72%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--click-color-alt) 44%, transparent);
+  animation: click-halo 720ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.click-halo.is-late {
+  border-color: var(--click-color-alt);
+  animation: click-halo-late 780ms cubic-bezier(0.16, 1, 0.3, 1) 70ms forwards;
+}
+
+.click-core {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  margin: -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 16%, var(--click-color) 34%, var(--click-color-alt) 64%, transparent 72%);
+  box-shadow:
+    0 0 18px var(--click-color),
+    0 0 34px color-mix(in srgb, var(--click-color-alt) 70%, transparent);
+  animation: click-core 540ms ease-out forwards;
+}
+
+.click-rays {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.click-rays em {
+  position: absolute;
+  top: -7px;
+  left: -1px;
+  width: 2px;
+  height: 25px;
+  border-radius: 999px;
+  background: linear-gradient(to top, transparent, var(--click-color), #fff);
+  box-shadow: 0 0 9px var(--click-color);
+  transform: rotate(var(--ray-angle)) translateY(4px) scaleY(0.2);
+  transform-origin: 50% 100%;
+  animation: click-ray 650ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.click-rays em:nth-child(1) { --ray-angle: 0deg; }
+.click-rays em:nth-child(2) { --ray-angle: 36deg; }
+.click-rays em:nth-child(3) { --ray-angle: 72deg; }
+.click-rays em:nth-child(4) { --ray-angle: 108deg; }
+.click-rays em:nth-child(5) { --ray-angle: 144deg; }
+.click-rays em:nth-child(6) { --ray-angle: 180deg; }
+.click-rays em:nth-child(7) { --ray-angle: 216deg; }
+.click-rays em:nth-child(8) { --ray-angle: 252deg; }
+.click-rays em:nth-child(9) { --ray-angle: 288deg; }
+.click-rays em:nth-child(10) { --ray-angle: 324deg; }
 
 .click-burst i {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px;
   border-radius: 50%;
-  background: var(--click-color);
-  box-shadow: 0 0 10px var(--click-color);
-  animation: click-particle 680ms ease-out forwards;
+  background: linear-gradient(135deg, #fff, var(--click-color) 42%, var(--click-color-alt));
+  box-shadow: 0 0 12px var(--click-color);
+  animation: click-particle 780ms cubic-bezier(0.14, 0.82, 0.22, 1) forwards;
 }
 
-.click-burst i:nth-child(1) { --particle-x: 30px; --particle-y: 0; }
-.click-burst i:nth-child(2) { --particle-x: 0; --particle-y: 30px; }
-.click-burst i:nth-child(3) { --particle-x: -28px; --particle-y: 8px; }
-.click-burst i:nth-child(4) { --particle-x: 8px; --particle-y: -28px; }
+.click-burst i:nth-of-type(1) { --particle-angle: 0deg; --particle-distance: 46px; }
+.click-burst i:nth-of-type(2) { --particle-angle: 30deg; --particle-distance: 38px; }
+.click-burst i:nth-of-type(3) { --particle-angle: 60deg; --particle-distance: 50px; }
+.click-burst i:nth-of-type(4) { --particle-angle: 90deg; --particle-distance: 40px; }
+.click-burst i:nth-of-type(5) { --particle-angle: 120deg; --particle-distance: 52px; }
+.click-burst i:nth-of-type(6) { --particle-angle: 150deg; --particle-distance: 36px; }
+.click-burst i:nth-of-type(7) { --particle-angle: 180deg; --particle-distance: 48px; }
+.click-burst i:nth-of-type(8) { --particle-angle: 210deg; --particle-distance: 40px; }
+.click-burst i:nth-of-type(9) { --particle-angle: 240deg; --particle-distance: 52px; }
+.click-burst i:nth-of-type(10) { --particle-angle: 270deg; --particle-distance: 38px; }
+.click-burst i:nth-of-type(11) { --particle-angle: 300deg; --particle-distance: 48px; }
+.click-burst i:nth-of-type(12) { --particle-angle: 330deg; --particle-distance: 42px; }
 
-@keyframes click-ring {
-  from { opacity: 0.95; transform: scale(0.35); }
-  to { opacity: 0; transform: scale(3.2); }
+@keyframes click-life {
+  0%, 72% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes click-halo {
+  from { opacity: 0.95; transform: scale(0.24); }
+  to { opacity: 0; transform: scale(3.35); }
+}
+
+@keyframes click-halo-late {
+  from { opacity: 0.7; transform: scale(0.4); }
+  to { opacity: 0; transform: scale(2.45); }
+}
+
+@keyframes click-core {
+  from { opacity: 1; transform: scale(0.45); }
+  to { opacity: 0; transform: scale(1.8); }
+}
+
+@keyframes click-ray {
+  from { opacity: 0; transform: rotate(var(--ray-angle)) translateY(4px) scaleY(0.15); }
+  35% { opacity: 0.95; }
+  to { opacity: 0; transform: rotate(var(--ray-angle)) translateY(-31px) scaleY(1); }
 }
 
 @keyframes click-particle {
-  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  to { opacity: 0; transform: translate(calc(-50% + var(--particle-x)), calc(-50% + var(--particle-y))) scale(0.2); }
+  from { opacity: 1; transform: rotate(var(--particle-angle)) translateX(7px) scale(1); }
+  to { opacity: 0; transform: rotate(var(--particle-angle)) translateX(var(--particle-distance)) scale(0.14); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .click-burst,
-  .click-burst i {
+  .click-burst i,
+  .click-halo,
+  .click-core,
+  .click-rays em {
     animation-duration: 0.01ms;
   }
 }
@@ -2796,6 +2893,7 @@ body::-webkit-scrollbar,
 
 /* 不同比例图片：模糊铺底 + 原图完整显示 */
 .adaptive-media-frame {
+  position: absolute;
   display: block;
   overflow: hidden;
   background: #08111f;
@@ -2804,7 +2902,7 @@ body::-webkit-scrollbar,
 .adaptive-media-frame::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(4, 10, 20, 0.04), rgba(4, 10, 20, 0.24));
+  background: linear-gradient(180deg, rgba(4, 10, 20, 0.03), rgba(4, 10, 20, 0.2));
   content: "";
   pointer-events: none;
 }
@@ -2834,43 +2932,10 @@ body::-webkit-scrollbar,
   filter: saturate(1.03);
 }
 
-.game-card {
-  background-image:
-    linear-gradient(180deg, rgba(5, 12, 25, 0.08) 5%, rgba(5, 12, 25, 0.2) 42%, rgba(5, 12, 25, 0.94) 100%),
-    linear-gradient(135deg, color-mix(in srgb, var(--game-color) 65%, #142238), #101a2d);
-}
-
-.game-card.is-complete {
-  background-image:
-    linear-gradient(180deg, rgba(5, 12, 25, 0.05) 5%, rgba(5, 12, 25, 0.22) 42%, rgba(5, 24, 23, 0.95) 100%),
-    linear-gradient(135deg, var(--success), #102a38);
-}
-
-.game-card-art {
-  background-color: #101a2d;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
-
-.game-card-art::before {
-  position: absolute;
-  inset: -22px;
-  background-image: var(--game-artwork), var(--game-artwork-fallback);
-  background-position: center;
-  background-size: cover;
-  content: "";
-  filter: blur(18px) brightness(0.64);
-  transform: scale(1.12);
-}
-
-.game-detail-backdrop::before {
-  position: absolute;
-  inset: -30px;
-  background-image: var(--game-artwork), var(--game-artwork-fallback);
-  background-position: center;
-  background-size: cover;
-  content: "";
-  filter: blur(26px) brightness(0.56);
-  transform: scale(1.08);
+.global-background-slide.adaptive-media-frame,
+.global-background-slide.adaptive-media-frame.is-active {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
 }

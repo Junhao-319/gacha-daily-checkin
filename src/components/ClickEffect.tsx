@@ -5,9 +5,16 @@ interface ClickBurst {
   x: number;
   y: number;
   color: string;
+  colorAlt: string;
 }
 
-const COLORS = ["#22d3ee", "#a78bfa", "#f472b6", "#fbbf24", "#34d399"];
+const COLOR_PAIRS = [
+  ["#22d3ee", "#a78bfa"],
+  ["#f472b6", "#fbbf24"],
+  ["#34d399", "#22d3ee"],
+  ["#a78bfa", "#f472b6"],
+  ["#fbbf24", "#fb7185"]
+];
 
 export function ClickEffect() {
   const [bursts, setBursts] = useState<ClickBurst[]>([]);
@@ -16,16 +23,18 @@ export function ClickEffect() {
 
   useEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
+      const pair = COLOR_PAIRS[(nextId.current - 1) % COLOR_PAIRS.length];
       const burst: ClickBurst = {
         id: nextId.current++,
         x: event.clientX,
         y: event.clientY,
-        color: COLORS[(nextId.current - 1) % COLORS.length]
+        color: pair[0],
+        colorAlt: pair[1]
       };
-      setBursts((current) => [...current.slice(-5), burst]);
+      setBursts((current) => [...current.slice(-6), burst]);
       const timer = window.setTimeout(() => {
         setBursts((current) => current.filter((item) => item.id !== burst.id));
-      }, 760);
+      }, 900);
       timers.current.push(timer);
     };
 
@@ -48,14 +57,18 @@ export function ClickEffect() {
             {
               left: burst.x,
               top: burst.y,
-              "--click-color": burst.color
+              "--click-color": burst.color,
+              "--click-color-alt": burst.colorAlt
             } as React.CSSProperties
           }
         >
-          <i />
-          <i />
-          <i />
-          <i />
+          <b className="click-halo" />
+          <b className="click-halo is-late" />
+          <span className="click-core" />
+          <span className="click-rays">
+            {Array.from({ length: 10 }, (_, index) => <em key={index} />)}
+          </span>
+          {Array.from({ length: 12 }, (_, index) => <i key={index} />)}
         </span>
       ))}
     </div>
