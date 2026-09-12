@@ -28,11 +28,27 @@ function shuffle<T>(items: T[]): T[] {
 }
 
 function LocalImageSlide({ localUrl, remoteUrl }: { localUrl: string | null; remoteUrl: string | null }) {
-  const [source, setSource] = useState(remoteUrl ?? localUrl);
+  const initialSource = localUrl ?? remoteUrl;
+  const [source, setSource] = useState(initialSource);
 
   useEffect(() => {
-    setSource(remoteUrl ?? localUrl);
-  }, [localUrl, remoteUrl]);
+    let active = true;
+    setSource(initialSource);
+
+    if (remoteUrl && localUrl && remoteUrl !== localUrl) {
+      const image = new Image();
+      image.onload = () => {
+        if (active) {
+          setSource(remoteUrl);
+        }
+      };
+      image.src = remoteUrl;
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [initialSource, localUrl, remoteUrl]);
 
   if (!source) {
     return null;
@@ -46,13 +62,14 @@ function LocalImageSlide({ localUrl, remoteUrl }: { localUrl: string | null; rem
       onError={() => {
         if (localUrl && source !== localUrl) {
           setSource(localUrl);
+        } else if (remoteUrl && source !== remoteUrl) {
+          setSource(remoteUrl);
         }
       }}
       src={source}
     />
   );
 }
-
 export function GlobalBackground({ preference, activeGames, backgrounds }: GlobalBackgroundProps) {
   const remoteArtworkVersion = useArtworkVersion();
   const [activeSlide, setActiveSlide] = useState(0);
