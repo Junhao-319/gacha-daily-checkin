@@ -10,21 +10,8 @@
   "nikke": {
     "url": "https://game.gtimg.cn/images/nikke/act/welfare202505/new_swip_img1.jpg",
     "file": "nikke.jpg"
-  },  "home-miku-2024": {
-    "url": "https://magicalmirai.com/2024/images/og.jpg",
-    "file": "home-miku-magical-mirai-2024.jpg"
   },
-  "home-miku-2023": {
-    "url": "https://magicalmirai.com/2023/images/og.jpg",
-    "file": "home-miku-magical-mirai-2023.jpg"
-  },  "home-miku-2026": {
-    "url": "https://magicalmirai.com/2026/images/og.jpg",
-    "file": "home-miku-magical-mirai-2026.jpg"
-  },
-  "home-miku-2025": {
-    "url": "https://magicalmirai.com/2025/images/og.jpg",
-    "file": "home-miku-magical-mirai-2025.jpg"
-  },  "honkai-impact-3rd": {
+  "honkai-impact-3rd": {
     "url": "https://act-webstatic.mihoyo.com/puzzle/bh3/pz_pmEtnQnIB1/resource/puzzle/2026/07/20/311a6c767c9aa0ef3febc5f1631e2e59_5912638023656874024.png",
     "file": "honkai-impact-3rd.png"
   },

@@ -23,6 +23,7 @@ export function createInitialState(now = new Date()): PersistedStateV3 {
     theme: "system",
     backgrounds: {
       global: null,
+      homeCustomEnabled: false,
       games: {}
     }
   };
@@ -147,7 +148,7 @@ export function appStateReducer(state: PersistedStateV3, action: AppAction): Per
       if (action.target === "global") {
         return {
           ...state,
-          backgrounds: { ...state.backgrounds, global: action.background }
+          backgrounds: { ...state.backgrounds, global: action.background, homeCustomEnabled: Boolean(action.background) }
         };
       }
 

@@ -1,5 +1,5 @@
 {
-  "version": "bd5f8d25462de3a4",
+  "version": "d9c225812de22841",
   "images": {
     "aether-gazer.jpg": {
       "sha256": "48852f06c0ed34324806b86ab13933098ce0991556a1c16e60544bdb1efd948d",
@@ -36,22 +36,6 @@
     "girls-frontline-2.jpg": {
       "sha256": "05bda7c8ad1c0adbde032c643b80fc152a99ea7a11a000c641ecbbfc320a614d",
       "bytes": 277585
-    },
-    "home-miku-magical-mirai-2023.jpg": {
-      "sha256": "dd9c7fbab11917553d1f91b18f00f4c3cc20c432dda21e4f96af4333749c3a7c",
-      "bytes": 261381
-    },
-    "home-miku-magical-mirai-2024.jpg": {
-      "sha256": "0c80c93ff723928a414d717e223b90187ed1356e69aa91e2754b7143c4b4219c",
-      "bytes": 302914
-    },
-    "home-miku-magical-mirai-2025.jpg": {
-      "sha256": "8153e9fe3c94ae7b04bc8199bf5db5ec0496aa8ec49d237fb0517b59f4138fb7",
-      "bytes": 355189
-    },
-    "home-miku-magical-mirai-2026.jpg": {
-      "sha256": "00277014b8d9a860c9caa1d4e7717a188f571f7a0ecbd497c3bea970a88ac6af",
-      "bytes": 280338
     },
     "honkai-impact-3rd.png": {
       "sha256": "b5565c62521b77327905aea15f5cacac94975c9555dab5571608a6a8206afb1e",

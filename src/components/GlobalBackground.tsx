@@ -1,22 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { getPublicAssetUrl } from "../lib/assets";
 import { getArtworkUrls, useArtworkVersion } from "../lib/artworkSync";
-import { getGameArtworkPath, getGameVideoArtworkPath } from "../lib/games";
+import { GAME_CATALOG } from "../lib/gameCatalog";
 import { BackgroundMedia } from "./BackgroundMedia";
-import type { BackgroundPreference, BackgroundSettings, Game } from "../types";
+import type { BackgroundPreference } from "../types";
 
 interface GlobalBackgroundProps {
   preference: BackgroundPreference | null;
-  activeGames: Game[];
-  backgrounds: BackgroundSettings;
 }
 
-const HOME_ARTWORK_PATHS = [
-  "game-art/home-miku-magical-mirai-2026.jpg",
-  "game-art/home-miku-magical-mirai-2025.jpg",
-  "game-art/home-miku-magical-mirai-2024.jpg",
-  "game-art/home-miku-magical-mirai-2023.jpg"
-];
+const ANIME_GALLERY_PATHS = GAME_CATALOG
+  .map((entry) => entry.artwork)
+  .filter((path): path is string => Boolean(path));
 
 function shuffle<T>(items: T[]): T[] {
   const copy = [...items];
@@ -70,52 +64,23 @@ function LocalImageSlide({ localUrl, remoteUrl }: { localUrl: string | null; rem
     />
   );
 }
-export function GlobalBackground({ preference, activeGames, backgrounds }: GlobalBackgroundProps) {
+
+export function GlobalBackground({ preference }: GlobalBackgroundProps) {
   const remoteArtworkVersion = useArtworkVersion();
   const [activeSlide, setActiveSlide] = useState(0);
-  const activeGameKey = activeGames.map((game) => game.id).join("|");
 
   const slides = useMemo(() => {
-    const homeSlides = HOME_ARTWORK_PATHS.map((path, index) => {
-      const { localUrl, remoteUrl } = getArtworkUrls(path, remoteArtworkVersion);
-      return {
-        id: `home-${index}`,
-        preference: null as BackgroundPreference | null,
-        localUrl,
-        remoteUrl,
-        videoUrl: null as string | null
-      };
-    });
+    if (preference) {
+      return [{ id: "saved-background", preference, localUrl: null, remoteUrl: null }];
+    }
 
-    const globalSlide = preference
-      ? [{
-          id: "saved-home-background",
-          preference,
-          localUrl: null as string | null,
-          remoteUrl: null as string | null,
-          videoUrl: null as string | null
-        }]
-      : [];
-
-    const gameSlides = activeGames.map((game) => {
-      const gamePreference = backgrounds.games[game.id] ?? null;
-      const { localUrl, remoteUrl } = getArtworkUrls(
-        getGameArtworkPath(game),
-        remoteArtworkVersion
-      );
-      return {
-        id: game.id,
-        preference: gamePreference,
-        localUrl,
-        remoteUrl,
-        videoUrl: getPublicAssetUrl(getGameVideoArtworkPath(game))
-      };
-    });
-
-    return shuffle([...homeSlides, ...globalSlide, ...gameSlides]).filter(
-      (slide) => slide.preference || slide.localUrl || slide.remoteUrl || slide.videoUrl
+    return shuffle(
+      ANIME_GALLERY_PATHS.map((path, index) => {
+        const { localUrl, remoteUrl } = getArtworkUrls(path, remoteArtworkVersion);
+        return { id: `anime-${index}`, preference: null, localUrl, remoteUrl };
+      }).filter((slide) => slide.localUrl || slide.remoteUrl)
     );
-  }, [activeGameKey, backgrounds, preference, remoteArtworkVersion]);
+  }, [preference, remoteArtworkVersion]);
 
   useEffect(() => {
     if (slides.length < 2) {
@@ -141,18 +106,6 @@ export function GlobalBackground({ preference, activeGames, backgrounds }: Globa
     <div className="global-background" aria-hidden="true">
       {active?.preference ? (
         <BackgroundMedia className="global-background-slide is-active" preference={active.preference} />
-      ) : active?.videoUrl ? (
-        <video
-          autoPlay
-          className="global-background-slide is-active"
-          key={active.id}
-          loop
-          muted
-          playsInline
-          poster={active.localUrl ?? undefined}
-          preload="metadata"
-          src={active.videoUrl}
-        />
       ) : active ? (
         <LocalImageSlide key={active.id} localUrl={active.localUrl} remoteUrl={active.remoteUrl} />
       ) : null}

@@ -183,7 +183,7 @@ function migrateV1(parsed: Record<string, unknown>, now: Date): PersistedStateV3
     games,
     checkIns,
     theme,
-    backgrounds: { global: null, games: {} }
+    backgrounds: { global: null, homeCustomEnabled: false, games: {} }
   };
 }
 
@@ -215,7 +215,7 @@ function parseBackgroundPreference(value: unknown): BackgroundPreference | null 
 
 function parseBackgrounds(value: unknown): BackgroundSettings {
   if (value === undefined) {
-    return { global: null, games: {} };
+    return { global: null, homeCustomEnabled: false, games: {} };
   }
 
   if (!isRecord(value)) {
@@ -237,6 +237,7 @@ function parseBackgrounds(value: unknown): BackgroundSettings {
 
   return {
     global: parseBackgroundPreference(value.global),
+    homeCustomEnabled: value.homeCustomEnabled === true,
     games
   };
 }
@@ -263,7 +264,7 @@ function migrateV2(parsed: Record<string, unknown>, now: Date): PersistedStateV3
     games,
     checkIns: parseV2CheckIns(parsed.checkIns),
     theme,
-    backgrounds: { global: null, games: {} }
+    backgrounds: { global: null, homeCustomEnabled: false, games: {} }
   };
 }
 

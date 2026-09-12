@@ -25,6 +25,7 @@ export interface BackgroundPreference {
 
 export interface BackgroundSettings {
   global: BackgroundPreference | null;
+  homeCustomEnabled: boolean;
   games: Record<string, BackgroundPreference>;
 }
 

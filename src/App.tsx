@@ -259,7 +259,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <ClickEffect />
-      <GlobalBackground activeGames={activeGames} backgrounds={state.backgrounds} preference={state.backgrounds.global} />
+      <GlobalBackground preference={state.backgrounds.homeCustomEnabled ? state.backgrounds.global : null} />
       <div className="ambient-glow ambient-glow-one" aria-hidden="true" />
       <div className="ambient-glow ambient-glow-two" aria-hidden="true" />
 
@@ -378,7 +378,9 @@ export default function App() {
       <BackgroundDialog
         current={
           backgroundDialogTarget === 'global'
-            ? state.backgrounds.global
+            ? state.backgrounds.homeCustomEnabled
+              ? state.backgrounds.global
+              : null
             : backgroundDialogTarget
               ? state.backgrounds.games[backgroundDialogTarget.gameId] ?? null
               : null
