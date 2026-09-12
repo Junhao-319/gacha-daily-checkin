@@ -1,5 +1,5 @@
 import { CheckIcon } from "./Icons";
-import { getPublicAssetUrl } from "../lib/assets";
+import { getArtworkUrls, useArtworkVersion } from "../lib/artworkSync";
 import { getCatalogEntryForGame } from "../lib/gameCatalog";
 import { getGameAccent, getGameArtworkPath, getGameInitial } from "../lib/games";
 import type { Game } from "../types";
@@ -12,7 +12,8 @@ interface GameCardProps {
 }
 
 export function GameCard({ game, completed, total, onOpen }: GameCardProps) {
-  const artworkUrl = getPublicAssetUrl(getGameArtworkPath(game));
+  const remoteArtworkVersion = useArtworkVersion();
+  const { localUrl, remoteUrl } = getArtworkUrls(getGameArtworkPath(game), remoteArtworkVersion);
   const accent = getGameAccent(game);
   const catalogEntry = getCatalogEntryForGame(game);
   const isComplete = total > 0 && completed === total;
@@ -27,7 +28,8 @@ export function GameCard({ game, completed, total, onOpen }: GameCardProps) {
         {
           "--game-color": accent,
           "--game-progress": progress,
-          "--game-artwork": artworkUrl ? `url("${artworkUrl}")` : "none"
+          "--game-artwork": remoteUrl ? `url("${remoteUrl}")` : "none",
+          "--game-artwork-fallback": localUrl ? `url("${localUrl}")` : "none"
         } as React.CSSProperties
       }
       type="button"

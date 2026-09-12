@@ -1,0 +1,85 @@
+{
+  "version": "eddfd492a71a3b1e",
+  "images": {
+    "aether-gazer.jpg": {
+      "sha256": "48852f06c0ed34324806b86ab13933098ce0991556a1c16e60544bdb1efd948d",
+      "bytes": 270814
+    },
+    "arknights-endfield.jpg": {
+      "sha256": "83201fd063ff2e17c17053648408cbe46d6f244a1dd099a7f3e712b452b6cd3c",
+      "bytes": 12723
+    },
+    "arknights.jpg": {
+      "sha256": "364808c8921b70b37a3a0ba68f656428ef13161425965bddbdf6ab7433b917ec",
+      "bytes": 531195
+    },
+    "azur-lane.png": {
+      "sha256": "839e2531e2b1ed4a99dd974e772d1c3576042574ca35868beee318fa793994ca",
+      "bytes": 1424
+    },
+    "blue-archive.jpg": {
+      "sha256": "79916d520d3333adb8a8c99e5b2ce6207134888661e404ef2c30b41d49689770",
+      "bytes": 139789
+    },
+    "fate-grand-order.jpg": {
+      "sha256": "1277d60a365b505f5e78533a1c9e576bef77b5c4e82d3974bf2c41378d06c875",
+      "bytes": 60341
+    },
+    "genshin-impact.webp": {
+      "sha256": "83a2d202b252dc329edd90840feb44440b677ad473fce95da8099cac436c056d",
+      "bytes": 17674
+    },
+    "girls-frontline-2.jpg": {
+      "sha256": "05bda7c8ad1c0adbde032c643b80fc152a99ea7a11a000c641ecbbfc320a614d",
+      "bytes": 277585
+    },
+    "honkai-impact-3rd.png": {
+      "sha256": "b5565c62521b77327905aea15f5cacac94975c9555dab5571608a6a8206afb1e",
+      "bytes": 975864
+    },
+    "honkai-star-rail.webp": {
+      "sha256": "f30725758261111cd314250bddc2a29a4385218220a16232c005836281052a0d",
+      "bytes": 109810
+    },
+    "infinite-nikki.jpg": {
+      "sha256": "d2ad5fc335be9dbce5d34a3cd6315baade02f34a5fb2364bbed3e09211ef2b3a",
+      "bytes": 295168
+    },
+    "love-and-deepspace.png": {
+      "sha256": "5e76198b40630d7c564246ccaf5c7c607a1dbde920ab31ac3f398212ca258644",
+      "bytes": 281435
+    },
+    "onmyoji.jpg": {
+      "sha256": "08b4f739fe2d1cc03ee53e1634f051e32b04a97eb49177186e5d9ef8fdc80f0c",
+      "bytes": 430886
+    },
+    "princess-connect.jpg": {
+      "sha256": "258f11eb26ad9a731f1d96f6f9d609f63cbb859294855050b997d58058f49c6e",
+      "bytes": 378990
+    },
+    "punishing-gray-raven.jpg": {
+      "sha256": "abec6a26a9f415c087bae1fa99be1dce06ff4307df327976380c17db63126bed",
+      "bytes": 14373
+    },
+    "reverse-1999.jpg": {
+      "sha256": "605e339f2d7bc93682ebb9b3f3e242a6f087a9ac2d3c391646f4922657919109",
+      "bytes": 405724
+    },
+    "snowbreak.jpg": {
+      "sha256": "9508a08ade59636c1d6148c52b0b4db1d86816d0769096bfcdf925e8f58a4f48",
+      "bytes": 483055
+    },
+    "tower-of-fantasy.jpg": {
+      "sha256": "25ec93d546d9ae088af314db035b0d3967c7b953c42a67e051fe2c47c5128a37",
+      "bytes": 494883
+    },
+    "wuthering-waves.jpg": {
+      "sha256": "2a988a02b96f3a81c0cf69994e9d5ba012ca9c2fa2926bdf2601ef90b7d3978c",
+      "bytes": 643870
+    },
+    "zenless-zone-zero.jpg": {
+      "sha256": "753a1957cee1c5c7c251c87ed31c6d4b667b9efc63f5a2f2bac6c0165c842de4",
+      "bytes": 11511
+    }
+  }
+}

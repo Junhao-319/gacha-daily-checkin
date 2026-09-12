@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Modal } from "./Modal";
 import { PlusIcon } from "./Icons";
-import { getPublicAssetUrl } from "../lib/assets";
+import { getArtworkUrls, useArtworkVersion } from "../lib/artworkSync";
 import { GAME_CATALOG, type GameCatalogEntry } from "../lib/gameCatalog";
 import { getGameNameError, normalizeGameName } from "../lib/games";
 import type { Game } from "../types";
@@ -23,6 +23,7 @@ export function AddGameDialog({
   onAddCatalog,
   onAddCustom
 }: AddGameDialogProps) {
+  const remoteArtworkVersion = useArtworkVersion();
   const [query, setQuery] = useState("");
   const [customName, setCustomName] = useState("");
   const [customSubmitted, setCustomSubmitted] = useState(false);
@@ -96,7 +97,7 @@ export function AddGameDialog({
         {filteredCatalog.map((entry) => {
           const alreadyAdded = existingCatalogIds.has(entry.id);
           const detected = detectedCatalogIds.includes(entry.id);
-          const artworkUrl = getPublicAssetUrl(entry.artwork);
+          const { localUrl, remoteUrl } = getArtworkUrls(entry.artwork, remoteArtworkVersion);
 
           return (
             <button
@@ -110,7 +111,8 @@ export function AddGameDialog({
               style={
                 {
                   "--catalog-color": entry.accent,
-                  "--catalog-artwork": artworkUrl ? `url("${artworkUrl}")` : "none"
+                  "--catalog-artwork": remoteUrl ? `url("${remoteUrl}")` : "none",
+                  "--catalog-artwork-fallback": localUrl ? `url("${localUrl}")` : "none"
                 } as React.CSSProperties
               }
               type="button"

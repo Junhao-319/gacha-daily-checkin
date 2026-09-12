@@ -1354,6 +1354,7 @@ button.heat-cell:hover {
   background-image:
     linear-gradient(180deg, rgba(5, 12, 25, 0.08) 5%, rgba(5, 12, 25, 0.2) 42%, rgba(5, 12, 25, 0.94) 100%),
     var(--game-artwork),
+    var(--game-artwork-fallback),
     linear-gradient(135deg, var(--game-color), #142033);
   background-position: center, center, center;
   background-size: cover, cover, cover;
@@ -1374,6 +1375,7 @@ button.heat-cell:hover {
   background-image:
     linear-gradient(180deg, rgba(5, 12, 25, 0.05) 5%, rgba(5, 12, 25, 0.22) 42%, rgba(5, 24, 23, 0.95) 100%),
     var(--game-artwork),
+    var(--game-artwork-fallback),
     linear-gradient(135deg, var(--success), #102a38);
 }
 
@@ -1386,7 +1388,9 @@ button.heat-cell:hover {
 
 .game-card-art {
   z-index: -1;
-  background: var(--game-artwork) center / cover no-repeat;
+  background-image: var(--game-artwork), var(--game-artwork-fallback);
+  background-position: center;
+  background-size: cover;
   filter: saturate(1.05);
   transform: scale(1.015);
   transition: transform 300ms ease;
@@ -1484,7 +1488,9 @@ button.heat-cell:hover {
   position: absolute;
   z-index: -2;
   inset: -24px;
-  background: var(--game-artwork) center / cover no-repeat, linear-gradient(135deg, var(--game-color), #101a2d);
+  background-image: var(--game-artwork), var(--game-artwork-fallback), linear-gradient(135deg, var(--game-color), #101a2d);
+  background-position: center;
+  background-size: cover;
   filter: saturate(1.08) brightness(0.72);
   transform: scale(1.04);
 }
@@ -1799,7 +1805,7 @@ button.heat-cell:hover {
   height: 76px;
   border-radius: 13px;
   background-color: var(--catalog-color);
-  background-image: linear-gradient(180deg, transparent, rgba(4, 11, 24, 0.34)), var(--catalog-artwork);
+  background-image: linear-gradient(180deg, transparent, rgba(4, 11, 24, 0.34)), var(--catalog-artwork), var(--catalog-artwork-fallback);
   background-position: center;
   background-size: cover;
 }

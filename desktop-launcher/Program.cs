@@ -7,6 +7,8 @@ using Microsoft.Win32;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -31,13 +33,13 @@ namespace GachaDailyLauncher
             {
                 if (!createdNew)
                 {
-                    Thread.Sleep(700);
-                    OpenBrowser();
+                    ActivateExistingWindow();
                     return;
                 }
 
                 try
                 {
+                    EnsureWebView2Assemblies();
                     listener = new TcpListener(IPAddress.Loopback, Port);
                     listener.Start();
                     running = true;
@@ -47,9 +49,7 @@ namespace GachaDailyLauncher
 
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
-                    SetupTrayIcon();
-                    OpenBrowser();
-                    Application.Run();
+                    Application.Run(new MainForm());
                 }
                 catch (Exception exception)
                 {
@@ -74,6 +74,139 @@ namespace GachaDailyLauncher
                     }
                     mutex.ReleaseMutex();
                 }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void EnsureWebView2Assemblies()
+        {
+            string cacheDirectory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "GachaDailyCheckin",
+                "WebView2Runtime"
+            );
+            Directory.CreateDirectory(cacheDirectory);
+
+            ExtractResource("launcher.WebView2.Core.dll", Path.Combine(cacheDirectory, "Microsoft.Web.WebView2.Core.dll"));
+            ExtractResource("launcher.WebView2.WinForms.dll", Path.Combine(cacheDirectory, "Microsoft.Web.WebView2.WinForms.dll"));
+            ExtractResource("launcher.WebView2Loader.dll", Path.Combine(cacheDirectory, "WebView2Loader.dll"));
+
+            Environment.SetEnvironmentVariable(
+                "PATH",
+                cacheDirectory + ";" + Environment.GetEnvironmentVariable("PATH")
+            );
+            SetDllDirectory(cacheDirectory);
+
+            AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs args)
+            {
+                string assemblyName = new AssemblyName(args.Name).Name;
+                if (assemblyName == "Microsoft.Web.WebView2.Core")
+                {
+                    return Assembly.LoadFrom(Path.Combine(cacheDirectory, "Microsoft.Web.WebView2.Core.dll"));
+                }
+                if (assemblyName == "Microsoft.Web.WebView2.WinForms")
+                {
+                    return Assembly.LoadFrom(Path.Combine(cacheDirectory, "Microsoft.Web.WebView2.WinForms.dll"));
+                }
+                return null;
+            };
+        }
+
+        private static void ExtractResource(string resourceName, string targetPath)
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            using (Stream resource = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (resource == null)
+                {
+                    throw new InvalidOperationException("缺少 WebView2 组件：" + resourceName);
+                }
+
+                using (FileStream target = new FileStream(targetPath, FileMode.Create, FileAccess.Write, FileShare.Read))
+                {
+                    resource.CopyTo(target);
+                }
+            }
+        }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool SetDllDirectory(string pathName);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern IntPtr FindWindow(string className, string windowName);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr windowHandle, int command);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr windowHandle);
+
+        private static void ActivateExistingWindow()
+        {
+            IntPtr window = FindWindow(null, "二游日常打卡");
+            if (window != IntPtr.Zero)
+            {
+                ShowWindow(window, 9);
+                SetForegroundWindow(window);
+            }
+        }
+
+        private sealed class MainForm : Form
+        {
+            private readonly Microsoft.Web.WebView2.WinForms.WebView2 webView;
+
+            public MainForm()
+            {
+                Text = "二游日常打卡";
+                StartPosition = FormStartPosition.CenterScreen;
+                MinimumSize = new Size(920, 640);
+                ClientSize = new Size(1180, 780);
+                BackColor = Color.FromArgb(7, 17, 31);
+                try
+                {
+                    Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+                }
+                catch
+                {
+                }
+
+                webView = new Microsoft.Web.WebView2.WinForms.WebView2();
+                webView.Dock = DockStyle.Fill;
+                webView.CreationProperties = new Microsoft.Web.WebView2.WinForms.CoreWebView2CreationProperties
+                {
+                    UserDataFolder = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "GachaDailyCheckin",
+                        "WebView2Data"
+                    )
+                };
+                webView.CoreWebView2InitializationCompleted += WebViewInitializationCompleted;
+                Controls.Add(webView);
+                Shown += delegate
+                {
+                    webView.Source = new Uri(AppUrl);
+                };
+            }
+
+            private void WebViewInitializationCompleted(
+                object sender,
+                Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs eventArgs
+            )
+            {
+                if (!eventArgs.IsSuccess)
+                {
+                    MessageBox.Show(
+                        "应用界面初始化失败：" + eventArgs.InitializationException.Message,
+                        "二游日常打卡",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                    return;
+                }
+
+                webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+                webView.CoreWebView2.Settings.IsStatusBarEnabled = false;
+                webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
             }
         }
 

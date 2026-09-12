@@ -1,5 +1,5 @@
 import { BackIcon, CheckIcon, ListIcon, SparkleIcon } from "./Icons";
-import { getPublicAssetUrl } from "../lib/assets";
+import { getArtworkUrls, useArtworkVersion } from "../lib/artworkSync";
 import { formatCompletionTime, formatDateHeading, fromDateKey } from "../lib/date";
 import { getCatalogEntryForGame } from "../lib/gameCatalog";
 import { getGameAccent, getGameArtworkPath, getGameInitial } from "../lib/games";
@@ -24,7 +24,8 @@ export function GameDetail({
   onToggleTask
 }: GameDetailProps) {
   const progress = getTaskProgress(state, game, dateKey);
-  const artworkUrl = getPublicAssetUrl(getGameArtworkPath(game));
+  const remoteArtworkVersion = useArtworkVersion();
+  const { localUrl, remoteUrl } = getArtworkUrls(getGameArtworkPath(game), remoteArtworkVersion);
   const catalogEntry = getCatalogEntryForGame(game);
   const accent = getGameAccent(game);
   const allComplete = progress.total > 0 && progress.completed === progress.total;
@@ -35,7 +36,8 @@ export function GameDetail({
       style={
         {
           "--game-color": accent,
-          "--game-artwork": artworkUrl ? `url("${artworkUrl}")` : "none"
+          "--game-artwork": remoteUrl ? `url("${remoteUrl}")` : "none",
+          "--game-artwork-fallback": localUrl ? `url("${localUrl}")` : "none"
         } as React.CSSProperties
       }
     >
