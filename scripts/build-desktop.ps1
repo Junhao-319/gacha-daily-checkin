@@ -23,9 +23,15 @@ if (-not (Test-Path $webViewCore) -or -not (Test-Path $webViewWinForms) -or -not
 }
 
 Push-Location $projectRoot
+$previousBasePath = $env:VITE_BASE_PATH
+$previousDisablePwa = $env:VITE_DISABLE_PWA
 try {
+  $env:VITE_BASE_PATH = "/gacha-daily-checkin-desktop/"
+  $env:VITE_DISABLE_PWA = "true"
   pnpm build | Out-Host
 } finally {
+  $env:VITE_BASE_PATH = $previousBasePath
+  $env:VITE_DISABLE_PWA = $previousDisablePwa
   Pop-Location
 }
 

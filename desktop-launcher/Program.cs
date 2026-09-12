@@ -20,9 +20,9 @@ namespace GachaDailyLauncher
     internal static class Program
     {
         private const int Port = 47831;
-        private const string BasePath = "/gacha-daily-checkin/";
+        private const string BasePath = "/gacha-daily-checkin-desktop/";
         private const string HealthPath = "/health";
-        private const string AppUrl = "http://127.0.0.1:47831/gacha-daily-checkin/";
+        private const string AppUrl = "http://127.0.0.1:47831/gacha-daily-checkin-desktop/";
         private static TcpListener listener;
         private static NotifyIcon trayIcon;
         private static volatile bool running;
