@@ -1,9 +1,10 @@
 import { BackIcon, CheckIcon, ImageIcon, ListIcon, SparkleIcon } from "./Icons";
 import { BackgroundMedia } from "./BackgroundMedia";
+import { getPublicAssetUrl } from "../lib/assets";
 import { getArtworkUrls, useArtworkVersion } from "../lib/artworkSync";
 import { formatCompletionTime, formatDateHeading, fromDateKey } from "../lib/date";
 import { getCatalogEntryForGame } from "../lib/gameCatalog";
-import { getGameAccent, getGameArtworkPath, getGameInitial } from "../lib/games";
+import { getGameAccent, getGameArtworkPath, getGameInitial, getGameVideoArtworkPath } from "../lib/games";
 import { getTaskCompletionTime, getTaskProgress } from "../lib/state";
 import type { BackgroundPreference, Game, PersistedStateV3 } from "../types";
 
@@ -31,6 +32,7 @@ export function GameDetail({
   const progress = getTaskProgress(state, game, dateKey);
   const remoteArtworkVersion = useArtworkVersion();
   const { localUrl, remoteUrl } = getArtworkUrls(getGameArtworkPath(game), remoteArtworkVersion);
+  const defaultVideoUrl = getPublicAssetUrl(getGameVideoArtworkPath(game));
   const catalogEntry = getCatalogEntryForGame(game);
   const accent = getGameAccent(game);
   const allComplete = progress.total > 0 && progress.completed === progress.total;
@@ -47,6 +49,17 @@ export function GameDetail({
       }
     >
       <div className="game-detail-backdrop" aria-hidden="true" />
+      {!backgroundPreference && defaultVideoUrl ? (
+        <video
+          autoPlay
+          className="game-detail-default-media"
+          loop
+          muted
+          playsInline
+          poster={localUrl ?? undefined}
+          src={defaultVideoUrl}
+        />
+      ) : null}
       <BackgroundMedia className="game-detail-custom-media" preference={backgroundPreference} />
       <div className="game-detail-shade" aria-hidden="true" />
 

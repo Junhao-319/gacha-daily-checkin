@@ -74,3 +74,21 @@ git push -u origin master
 ## 数据说明
 
 打卡数据只存在当前浏览器，不会跨设备同步。桌面 EXE 和 GitHub Pages 是两个不同的网站来源，因此各自拥有一份独立数据。清除浏览器网站数据、使用无痕模式或更换浏览器都会得到一份独立的数据。
+## Android APK 预览版
+
+项目已加入 Capacitor Android 工程。同步移动端资源：
+
+```powershell
+pnpm build:mobile
+```
+
+在安装 JDK 21 和 Android SDK 36 后，可执行：
+
+```powershell
+cd android
+.\gradlew.bat assembleDebug
+```
+
+APK 输出到 `android/app/build/outputs/apk/debug/app-debug.apk`。当前生成的试用包位于桌面，文件名为 `二游打卡-Android试用.zip`。
+
+Android 版本无法读取 Steam Wallpaper Engine 或扫描 Windows 游戏，但支持游戏目录、任务清单、默认动态背景、本地图片/视频背景和本地数据保存。

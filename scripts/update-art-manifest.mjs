@@ -7,7 +7,7 @@ import { dirname } from "node:path";
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const artworkDirectory = join(projectRoot, "public", "game-art");
 const manifestPath = join(artworkDirectory, "manifest.json");
-const supportedExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".svg"]);
+const supportedExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".svg", ".mp4", ".webm", ".gif"]);
 
 function collectFiles(directory) {
   return readdirSync(directory, { withFileTypes: true })

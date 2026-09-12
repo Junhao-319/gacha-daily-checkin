@@ -98,6 +98,10 @@ export function getGameInitial(name: string): string {
   return Array.from(name.trim())[0] ?? "游";
 }
 
+export function getGameVideoArtworkPath(game: Game): string | null {
+  return getCatalogEntryForGame(game)?.videoArtwork ?? null;
+}
+
 export function getGameArtworkPath(game: Game): string | null {
   return getCatalogEntryForGame(game)?.artwork ?? null;
 }

@@ -5,6 +5,7 @@ import { GlobalBackground } from "./components/GlobalBackground";
 import { GameCard } from "./components/GameCard";
 import { GameDetail } from "./components/GameDetail";
 import { HistoryHeatmap } from "./components/HistoryHeatmap";
+import { HomeInsights } from "./components/HomeInsights";
 import {
   CalendarIcon,
   CheckIcon,
@@ -190,6 +191,8 @@ export default function App() {
           </span>
         </div>
       </section>
+
+      <HomeInsights activeGames={activeGames} dateKey={todayKey} />
 
       <section className="today-games" aria-labelledby="today-games-heading">
         <div className="section-heading">

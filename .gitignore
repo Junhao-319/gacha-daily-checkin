@@ -7,3 +7,4 @@ coverage/
 .DS_Store
 desktop-launcher/build/
 .tools/
+release/

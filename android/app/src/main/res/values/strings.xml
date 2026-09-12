@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">二游日常打卡</string>
+    <string name="title_activity_main">二游日常打卡</string>
+    <string name="package_name">com.junhao319.gachadailycheckin</string>
+    <string name="custom_url_scheme">com.junhao319.gachadailycheckin</string>
+</resources>

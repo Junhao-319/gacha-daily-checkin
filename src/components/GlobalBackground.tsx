@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { getPublicAssetUrl } from "../lib/assets";
 import { getArtworkUrls, useArtworkVersion } from "../lib/artworkSync";
-import { getGameArtworkPath } from "../lib/games";
+import { getGameArtworkPath, getGameVideoArtworkPath } from "../lib/games";
 import { BackgroundMedia } from "./BackgroundMedia";
 import type { BackgroundPreference, Game } from "../types";
 
@@ -19,17 +20,22 @@ export function GlobalBackground({ preference, activeGames }: GlobalBackgroundPr
   const [activeSlide, setActiveSlide] = useState(0);
   const defaultSlides = HOME_ARTWORK_PATHS.map((path, index) => {
     const { localUrl, remoteUrl } = getArtworkUrls(path, remoteArtworkVersion);
-    return { gameId: `home-${index}`, localUrl, remoteUrl };
+    return { id: `home-${index}`, localUrl, remoteUrl, videoUrl: null };
   });
   const gameSlides = activeGames.map((game) => {
     const { localUrl, remoteUrl } = getArtworkUrls(
       getGameArtworkPath(game),
       remoteArtworkVersion
     );
-    return { gameId: game.id, localUrl, remoteUrl };
+    return {
+      id: game.id,
+      localUrl,
+      remoteUrl,
+      videoUrl: getPublicAssetUrl(getGameVideoArtworkPath(game))
+    };
   });
   const allSlides = [...defaultSlides, ...gameSlides].filter(
-    (slide) => slide.localUrl || slide.remoteUrl
+    (slide) => slide.localUrl || slide.remoteUrl || slide.videoUrl
   );
 
   useEffect(() => {
@@ -55,18 +61,36 @@ export function GlobalBackground({ preference, activeGames }: GlobalBackgroundPr
       {preference ? (
         <BackgroundMedia className="global-background-media" preference={preference} />
       ) : (
-        allSlides.map((slide, index) => (
-          <span
-            className={`global-background-slide${index === activeSlide ? " is-active" : ""}`}
-            key={slide.gameId}
-            style={
-              {
-                "--slide-image": slide.remoteUrl ? `url("${slide.remoteUrl}")` : "none",
-                "--slide-fallback": slide.localUrl ? `url("${slide.localUrl}")` : "none"
-              } as React.CSSProperties
-            }
-          />
-        ))
+        allSlides.map((slide, index) => {
+          const active = index === activeSlide;
+          if (slide.videoUrl && active) {
+            return (
+              <video
+                autoPlay
+                className="global-background-slide is-active"
+                key={slide.id}
+                loop
+                muted
+                playsInline
+                poster={slide.localUrl ?? undefined}
+                src={slide.videoUrl}
+              />
+            );
+          }
+
+          return (
+            <span
+              className={`global-background-slide${active ? " is-active" : ""}`}
+              key={slide.id}
+              style={
+                {
+                  "--slide-image": slide.remoteUrl ? `url("${slide.remoteUrl}")` : "none",
+                  "--slide-fallback": slide.localUrl ? `url("${slide.localUrl}")` : "none"
+                } as React.CSSProperties
+              }
+            />
+          );
+        })
       )}
       <span className="global-background-overlay" />
     </div>

@@ -8,9 +8,9 @@ describe("App", () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(screen.getByText("崩坏：星穹铁道")).toBeInTheDocument();
-    expect(screen.getByText("鸣潮")).toBeInTheDocument();
-    expect(screen.getByText("明日方舟：终末地")).toBeInTheDocument();
+    expect(screen.getAllByText("崩坏：星穹铁道").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("鸣潮").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("明日方舟：终末地").length).toBeGreaterThan(0);
 
     await user.click(screen.getByRole("button", { name: /打开 崩坏：星穹铁道，已完成 0\/4/ }));
 

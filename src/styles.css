@@ -2121,7 +2121,8 @@ button.heat-cell:hover {
     radial-gradient(circle at 50% 15%, transparent, color-mix(in srgb, var(--page-bg) 42%, transparent));
 }
 
-.game-detail-custom-media {
+.game-detail-custom-media,
+.game-detail-default-media {
   position: absolute;
   z-index: -2;
   inset: -24px;
@@ -2369,5 +2370,220 @@ button.heat-cell:hover {
   .background-upload input {
     grid-column: 1 / -1;
     max-width: none;
+  }
+}
+/* 多彩首页内容与动态氛围 */
+.global-background::before,
+.global-background::after {
+  position: absolute;
+  z-index: 2;
+  border-radius: 50%;
+  pointer-events: none;
+  content: "";
+  filter: blur(2px);
+  opacity: 0.72;
+}
+
+.global-background::before {
+  top: 8%;
+  right: 9%;
+  width: min(36vw, 440px);
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.85) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 18%, rgba(103, 232, 249, 0.75) 0 3px, transparent 4px),
+    radial-gradient(circle at 54% 72%, rgba(255, 255, 255, 0.65) 0 2px, transparent 3px),
+    radial-gradient(circle, rgba(56, 189, 248, 0.14), transparent 66%);
+  animation: ambient-float 9s ease-in-out infinite alternate;
+}
+
+.global-background::after {
+  bottom: -8%;
+  left: 4%;
+  width: min(42vw, 520px);
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle at 24% 58%, rgba(251, 191, 36, 0.72) 0 2px, transparent 3px),
+    radial-gradient(circle at 66% 36%, rgba(244, 114, 182, 0.66) 0 3px, transparent 4px),
+    radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.13), transparent 68%);
+  animation: ambient-float 11s ease-in-out infinite alternate-reverse;
+}
+
+.global-background-slide.is-active {
+  animation: wallpaper-pan 14s ease-in-out infinite alternate;
+}
+
+.home-insights {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.82fr) minmax(0, 1.35fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.quote-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 250px;
+  padding: 30px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 27px;
+  background:
+    radial-gradient(circle at 88% 14%, rgba(255, 255, 255, 0.24), transparent 28%),
+    linear-gradient(145deg, #db4d86 0%, #8d5ce8 48%, #477fe8 100%);
+  box-shadow: 0 20px 44px rgba(91, 63, 167, 0.2);
+  color: #fff;
+  isolation: isolate;
+}
+
+.quote-card::after {
+  position: absolute;
+  right: -26px;
+  bottom: 22px;
+  color: rgba(255, 255, 255, 0.1);
+  content: "✦";
+  font-size: 8rem;
+  line-height: 1;
+}
+
+.quote-mark {
+  position: absolute;
+  top: 8px;
+  left: 20px;
+  color: rgba(255, 255, 255, 0.22);
+  font-family: Georgia, serif;
+  font-size: 6rem;
+  line-height: 1;
+}
+
+.quote-card > div {
+  position: relative;
+  z-index: 1;
+}
+
+.quote-card .section-kicker {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.quote-card blockquote {
+  margin: 34px 0 18px;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 750;
+  line-height: 1.65;
+  letter-spacing: 0.015em;
+}
+
+.quote-card cite {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.76rem;
+  font-style: normal;
+}
+
+.insight-stack {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 27px;
+  background: color-mix(in srgb, var(--surface-solid) 84%, transparent);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(20px);
+}
+
+.compact-heading {
+  margin-bottom: 15px;
+}
+
+.compact-heading h2 {
+  font-size: 1.12rem;
+}
+
+.tip-list {
+  display: grid;
+  gap: 9px;
+}
+
+.tip-card {
+  --tip-color: var(--accent);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--tip-color) 22%, var(--border));
+  border-radius: 16px;
+  background:
+    linear-gradient(100deg, color-mix(in srgb, var(--tip-color) 10%, transparent), transparent 72%),
+    var(--surface-muted);
+}
+
+.tip-avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tip-color) 18%, var(--surface-solid));
+  color: var(--tip-color);
+  font-weight: 850;
+}
+
+.tip-card > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tip-card strong {
+  font-size: 0.82rem;
+}
+
+.tip-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.tip-card-default {
+  --tip-color: #f59e0b;
+}
+
+.today-card {
+  box-shadow:
+    0 22px 60px rgba(30, 64, 92, 0.12),
+    -18px 18px 60px rgba(99, 102, 241, 0.08),
+    18px -14px 54px rgba(14, 165, 233, 0.08);
+}
+
+@keyframes wallpaper-pan {
+  from { transform: scale(1.04) translate3d(-0.8%, -0.5%, 0); }
+  to { transform: scale(1.13) translate3d(0.8%, 0.5%, 0); }
+}
+
+@keyframes ambient-float {
+  from { transform: translate3d(0, 0, 0) scale(0.95); opacity: 0.46; }
+  to { transform: translate3d(-16px, 20px, 0) scale(1.08); opacity: 0.78; }
+}
+
+@media (max-width: 840px) {
+  .home-insights {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-card {
+    min-height: 210px;
+  }
+}
+
+@media (max-width: 460px) {
+  .quote-card,
+  .insight-stack {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .quote-card blockquote {
+    font-size: 1.15rem;
   }
 }

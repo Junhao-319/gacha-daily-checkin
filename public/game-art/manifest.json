@@ -1,9 +1,13 @@
 {
-  "version": "15768b88b2beea59",
+  "version": "1b582eb00322e00b",
   "images": {
     "aether-gazer.jpg": {
       "sha256": "48852f06c0ed34324806b86ab13933098ce0991556a1c16e60544bdb1efd948d",
       "bytes": 270814
+    },
+    "arknights-endfield-rossi.mp4": {
+      "sha256": "1f821820b16d218f1f593e51a826565af648031278be2780dee6f7894b2a069b",
+      "bytes": 15837549
     },
     "arknights-endfield-v2.jpg": {
       "sha256": "10cf3d83cb190bb30dc58198253099f6bf6d5f0b0863a258394e58537eb96070",
