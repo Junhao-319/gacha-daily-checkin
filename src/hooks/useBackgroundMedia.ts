@@ -69,13 +69,15 @@ export function useBackgroundMedia(preference: BackgroundPreference | null) {
   }, [preference]);
 
   const externalUrl =
-    preference?.type === "upload" || preference?.type === "gallery"
+    preference?.type === "upload" || preference?.type === "gallery" || preference?.type === "builtin-gallery"
       ? null
       : resolvePreferenceUrl(preference);
 
+  const builtinUrls = preference?.type === "builtin-gallery" ? preference.urls ?? [] : [];
+
   return {
-    url: externalUrl ?? assetUrls[0] ?? null,
-    urls: externalUrl ? [externalUrl] : assetUrls,
+    url: externalUrl ?? builtinUrls[0] ?? assetUrls[0] ?? null,
+    urls: externalUrl ? [externalUrl] : builtinUrls.length > 0 ? builtinUrls : assetUrls,
     mediaType: preference?.mediaType ?? null,
     loading
   };

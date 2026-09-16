@@ -2,12 +2,14 @@ import { getCatalogEntryForGame } from "./gameCatalog";
 import type { Game } from "../types";
 
 const DAILY_QUOTES = [
-  { text: "千里之行，始于足下。", author: "老子" },
-  { text: "不积跬步，无以至千里。", author: "荀子" },
-  { text: "道阻且长，行则将至。", author: "《诗经》" },
-  { text: "凡是过往，皆为序章。", author: "莎士比亚" },
-  { text: "纵有疾风起，人生不言弃。", author: "保罗·瓦雷里" },
-  { text: "真正的发现之旅，不在于寻找新风景，而在于拥有新眼光。", author: "马塞尔·普鲁斯特" }
+  { text: "千里之行，始于足下。", author: "老子", tag: "从这一格开始" },
+  { text: "不积跬步，无以至千里。", author: "荀子", tag: "微小进度，也算前进" },
+  { text: "道阻且长，行则将至。", author: "《荀子》", tag: "缓慢但持续" },
+  { text: "凡是过往，皆为序章。", author: "莎士比亚", tag: "今天是新章节" },
+  { text: "纵有疾风起，人生不言弃。", author: "保罗·瓦雷里", tag: "把风留在身后" },
+  { text: "真正的发现之旅，不在于寻找新风景，而在于拥有新眼光。", author: "马塞尔·普鲁斯特", tag: "换个角度看今天" },
+  { text: "我们必须接受失望，因为它是有限的；但千万不可失去希望，因为它是无穷的。", author: "马丁·路德·金", tag: "希望仍在加载" },
+  { text: "你不必很厉害才开始，但你要开始才会很厉害。", author: "齐格·齐格拉", tag: "从现在开始" }
 ];
 
 const GAME_TIPS: Record<string, string[]> = {
@@ -37,8 +39,8 @@ function hashText(value: string): number {
   return hash;
 }
 
-export function getDailyQuote(dateKey: string) {
-  return DAILY_QUOTES[hashText(dateKey) % DAILY_QUOTES.length];
+export function getDailyQuote(dateKey: string, offset = 0) {
+  return DAILY_QUOTES[(hashText(dateKey) + offset) % DAILY_QUOTES.length];
 }
 
 export function getDailyGameTip(game: Game, dateKey: string): string {

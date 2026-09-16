@@ -61,7 +61,7 @@ export function Modal({ open, title, description, size = "regular", onClose, chi
       >
         <header className="modal-header">
           <div>
-            <p className="modal-kicker">次元日常</p>
+            <p className="modal-kicker">星迹手账</p>
             <h2 id="modal-title">{title}</h2>
             {description ? <p id="modal-description">{description}</p> : null}
           </div>

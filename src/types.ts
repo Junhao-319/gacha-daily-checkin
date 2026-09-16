@@ -17,10 +17,11 @@ export interface Game {
 }
 
 export interface BackgroundPreference {
-  type: "wallpaper" | "upload" | "url" | "gallery";
+  type: "wallpaper" | "upload" | "url" | "gallery" | "builtin-gallery";
   mediaType: BackgroundMediaType;
   value: string;
   assetIds?: string[];
+  urls?: string[];
   title?: string;
 }
 

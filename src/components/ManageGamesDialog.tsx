@@ -22,6 +22,8 @@ interface ManageGamesDialogProps {
   onRename: (gameId: string, name: string) => void;
   onArchive: (gameId: string) => void;
   onRestore: (gameId: string) => void;
+  privateGalleryUnlocked: boolean;
+  onUnlockPrivateGallery: () => void;
 }
 
 const THEME_OPTIONS: Array<{ value: ThemeMode; label: string; icon: typeof SunIcon }> = [
@@ -29,6 +31,8 @@ const THEME_OPTIONS: Array<{ value: ThemeMode; label: string; icon: typeof SunIc
   { value: "light", label: "浅色", icon: SunIcon },
   { value: "dark", label: "深色", icon: MoonIcon }
 ];
+
+const PRIVATE_GALLERY_PASSWORD = import.meta.env.VITE_PRIVATE_GALLERY_PASSWORD ?? "";
 
 export function ManageGamesDialog({
   open,
@@ -38,11 +42,15 @@ export function ManageGamesDialog({
   onThemeChange,
   onRename,
   onArchive,
-  onRestore
+  onRestore,
+  privateGalleryUnlocked,
+  onUnlockPrivateGallery
 }: ManageGamesDialogProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftName, setDraftName] = useState("");
   const [editError, setEditError] = useState<string | null>(null);
+  const [galleryPassword, setGalleryPassword] = useState("");
+  const [galleryPasswordError, setGalleryPasswordError] = useState<string | null>(null);
   const activeGames = games.filter((game) => game.archivedAt === null);
   const archivedGames = games.filter((game) => game.archivedAt !== null);
 
@@ -68,6 +76,17 @@ export function ManageGamesDialog({
 
     onRename(gameId, normalizeGameName(draftName));
     cancelEditing();
+  };
+
+  const unlockPrivateGallery = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!PRIVATE_GALLERY_PASSWORD || galleryPassword !== PRIVATE_GALLERY_PASSWORD) {
+      setGalleryPasswordError("密码不正确，请重试。");
+      return;
+    }
+    setGalleryPassword("");
+    setGalleryPasswordError(null);
+    onUnlockPrivateGallery();
   };
 
   const renderGameRow = (game: Game, archived: boolean) => {
@@ -184,6 +203,40 @@ export function ManageGamesDialog({
               );
             })}
           </div>
+        </section>
+
+        <section className="manage-section private-gallery-unlock" aria-labelledby="private-gallery-unlock-heading">
+          <div className="manage-section-heading">
+            <div>
+              <p className="section-kicker">专属内容</p>
+              <h3 id="private-gallery-unlock-heading">私密图集</h3>
+            </div>
+            <span className={`gallery-lock-status${privateGalleryUnlocked ? " is-unlocked" : ""}`}>
+              {privateGalleryUnlocked ? "已解锁" : "未解锁"}
+            </span>
+          </div>
+          {privateGalleryUnlocked ? (
+            <p className="manage-empty">专属图集已解锁。打开右上角的背景设置，即可选择并启用。</p>
+          ) : (
+            <form className="gallery-unlock-form" onSubmit={unlockPrivateGallery}>
+              <label>
+                <span>访问密码</span>
+                <input
+                  aria-label="专属图集访问密码"
+                  autoComplete="off"
+                  onChange={(event) => {
+                    setGalleryPassword(event.target.value);
+                    setGalleryPasswordError(null);
+                  }}
+                  placeholder="输入密码后解锁"
+                  type="password"
+                  value={galleryPassword}
+                />
+              </label>
+              <button className="button button-primary" type="submit">解锁图集</button>
+              {galleryPasswordError ? <p className="field-error" role="alert">{galleryPasswordError}</p> : null}
+            </form>
+          )}
         </section>
 
         <section className="manage-section" aria-labelledby="active-games-heading">

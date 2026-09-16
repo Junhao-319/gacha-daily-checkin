@@ -197,7 +197,7 @@ function parseBackgroundPreference(value: unknown): BackgroundPreference | null 
   }
 
   if (
-    (value.type !== "wallpaper" && value.type !== "upload" && value.type !== "url" && value.type !== "gallery") ||
+    (value.type !== "wallpaper" && value.type !== "upload" && value.type !== "url" && value.type !== "gallery" && value.type !== "builtin-gallery") ||
     (value.mediaType !== "image" && value.mediaType !== "video") ||
     typeof value.value !== "string" ||
     value.value.length === 0
@@ -211,12 +211,19 @@ function parseBackgroundPreference(value: unknown): BackgroundPreference | null 
   if (value.type === "gallery" && (!assetIds || assetIds.length === 0)) {
     throw new Error("本图集缺少图片资源");
   }
+  const urls = Array.isArray(value.urls)
+    ? value.urls.filter((url): url is string => typeof url === "string" && url.length > 0)
+    : undefined;
+  if (value.type === "builtin-gallery" && (!urls || urls.length === 0)) {
+    throw new Error("专属图集缺少图片资源");
+  }
 
   return {
     type: value.type,
     mediaType: value.mediaType,
     value: value.value,
     assetIds,
+    urls,
     title: typeof value.title === "string" ? value.title : undefined
   };
 }

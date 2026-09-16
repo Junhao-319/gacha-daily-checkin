@@ -91,7 +91,7 @@ export function BackgroundMedia({ preference, className = "" }: BackgroundMediaP
     return null;
   }
 
-  if (preference.type === "gallery") {
+  if (preference.type === "gallery" || preference.type === "builtin-gallery") {
     return <GalleryMedia className={className} urls={urls} />;
   }
 
@@ -100,11 +100,12 @@ export function BackgroundMedia({ preference, className = "" }: BackgroundMediaP
     return (
       <video
         autoPlay
-        className={className}
+        className={`${className} adaptive-video-media`}
         loop
         muted
         onError={() => setFailedUrl(activeUrl)}
         playsInline
+        preload="metadata"
         src={activeUrl}
       />
     );

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { getGameAccent, getGameInitial } from "../lib/games";
 import { getDailyGameTip, getDailyQuote } from "../lib/homeContent";
 import type { Game } from "../types";
@@ -8,17 +9,36 @@ interface HomeInsightsProps {
 }
 
 export function HomeInsights({ activeGames, dateKey }: HomeInsightsProps) {
-  const quote = getDailyQuote(dateKey);
+  const [quoteOffset, setQuoteOffset] = useState(0);
+  const quote = getDailyQuote(dateKey, quoteOffset);
   const visibleGames = activeGames.slice(0, 3);
 
   return (
     <section className="home-insights" aria-label="今日内容">
-      <article className="quote-card">
+      <article className="quote-card" aria-label="每日名人名言">
+        <span className="quote-orbit quote-orbit-one" aria-hidden="true" />
+        <span className="quote-orbit quote-orbit-two" aria-hidden="true" />
         <span className="quote-mark" aria-hidden="true">“</span>
-        <div>
-          <p className="section-kicker">今日寄语</p>
+        <img alt="" aria-hidden="true" className="quote-character" src="/quote-art/anime-quote-companion.png" />
+        <div className="quote-copy">
+          <div className="quote-topline">
+            <p className="section-kicker">DAILY QUOTE</p>
+            <span className="quote-chip">{quote.tag}</span>
+          </div>
           <blockquote>{quote.text}</blockquote>
-          <cite>— {quote.author}</cite>
+          <footer className="quote-footer">
+            <cite>— {quote.author}</cite>
+            <button
+              aria-label="换一句名言"
+              className="quote-refresh"
+              onClick={() => setQuoteOffset((offset) => offset + 1)}
+              title="换一句"
+              type="button"
+            >
+              <span aria-hidden="true">↻</span>
+              换一句
+            </button>
+          </footer>
         </div>
       </article>
 

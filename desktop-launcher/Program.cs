@@ -16,6 +16,10 @@ using System.Web.Script.Serialization;
 using System.Threading;
 using System.Windows.Forms;
 
+[assembly: AssemblyTitle("星迹手账")]
+[assembly: AssemblyProduct("星迹手账")]
+[assembly: AssemblyDescription("多游戏日常任务手账")]
+
 namespace GachaDailyLauncher
 {
     internal static class Program
@@ -58,7 +62,7 @@ namespace GachaDailyLauncher
                 {
                     MessageBox.Show(
                         "启动失败：" + exception.Message + Environment.NewLine + Environment.NewLine + AppUrl,
-                        "次元日常",
+                        "星迹手账",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error
                     );
@@ -152,7 +156,7 @@ namespace GachaDailyLauncher
 
         private static void ActivateExistingWindow()
         {
-            IntPtr window = FindWindow(null, "次元日常");
+            IntPtr window = FindWindow(null, "星迹手账");
             if (window != IntPtr.Zero)
             {
                 ShowWindow(window, 9);
@@ -169,7 +173,7 @@ namespace GachaDailyLauncher
 
             public MainForm()
             {
-                Text = "次元日常";
+                Text = "星迹手账";
                 StartPosition = FormStartPosition.CenterScreen;
                 MinimumSize = new Size(920, 640);
                 ClientSize = new Size(1180, 780);
@@ -177,8 +181,8 @@ namespace GachaDailyLauncher
                 ControlBox = false;
                 MaximizeBox = true;
                 MinimizeBox = true;
-                Padding = new Padding(1);
-                BackColor = Color.FromArgb(42, 75, 118);
+                Padding = new Padding(3);
+                BackColor = Color.FromArgb(62, 154, 232);
                 DoubleBuffered = true;
                 SetStyle(ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer, true);
                 try
@@ -206,7 +210,7 @@ namespace GachaDailyLauncher
                 title.AutoSize = false;
                 title.Dock = DockStyle.Fill;
                 title.Padding = new Padding(16, 0, 0, 0);
-                title.Text = "✦  次元日常";
+                title.Text = "✦  星迹手账";
                 title.TextAlign = ContentAlignment.MiddleLeft;
                 title.ForeColor = Color.FromArgb(236, 247, 255);
                 title.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
@@ -223,7 +227,7 @@ namespace GachaDailyLauncher
                 windowActions.BackColor = Color.Transparent;
                 windowActions.Controls.Add(CreateWindowButton("—", delegate { WindowState = FormWindowState.Minimized; }));
                 windowActions.Controls.Add(CreateWindowButton("□", delegate { ToggleMaximize(null, EventArgs.Empty); }));
-                windowActions.Controls.Add(CreateWindowButton("×", delegate { Close(); }, true));
+                windowActions.Controls.Add(CreateWindowButton("✕", delegate { Close(); }, true));
 
                 titleBar.Controls.Add(title);
                 titleBar.Controls.Add(windowActions);
@@ -269,7 +273,11 @@ namespace GachaDailyLauncher
                     : Color.FromArgb(28, 52, 82);
                 button.BackColor = Color.Transparent;
                 button.ForeColor = Color.FromArgb(224, 235, 247);
-                button.Font = new Font("Segoe UI Symbol", 10F, FontStyle.Regular);
+                button.Font = new Font(
+                    "Segoe UI Symbol",
+                    closeButton ? 14F : 10F,
+                    closeButton ? FontStyle.Bold : FontStyle.Regular
+                );
                 button.Text = text;
                 button.Cursor = Cursors.Hand;
                 button.TabStop = false;
@@ -283,8 +291,8 @@ namespace GachaDailyLauncher
                 eventArgs.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 eventArgs.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 using (GraphicsPath outerPath = CreateRoundedPath(
-                    new RectangleF(0.75F, 0.75F, Width - 1.5F, Height - 1.5F),
-                    WindowCornerRadius - 0.75F
+                    new RectangleF(1.5F, 1.5F, Width - 3F, Height - 3F),
+                    WindowCornerRadius - 1.5F
                 ))
                 using (LinearGradientBrush brush = new LinearGradientBrush(
                     ClientRectangle,
@@ -292,17 +300,17 @@ namespace GachaDailyLauncher
                     Color.FromArgb(168, 85, 247),
                     32F
                 ))
-                using (Pen pen = new Pen(brush, 1.45F))
+                using (Pen pen = new Pen(brush, 3F))
                 {
                     pen.LineJoin = LineJoin.Round;
                     eventArgs.Graphics.DrawPath(pen, outerPath);
                 }
 
                 using (GraphicsPath innerPath = CreateRoundedPath(
-                    new RectangleF(2F, 2F, Width - 4F, Height - 4F),
-                    WindowCornerRadius - 2F
+                    new RectangleF(3.5F, 3.5F, Width - 7F, Height - 7F),
+                    WindowCornerRadius - 3.5F
                 ))
-                using (Pen innerPen = new Pen(Color.FromArgb(42, 255, 255, 255), 0.8F))
+                using (Pen innerPen = new Pen(Color.FromArgb(118, 220, 239, 255), 1F))
                 {
                     innerPen.LineJoin = LineJoin.Round;
                     eventArgs.Graphics.DrawPath(innerPen, innerPath);
@@ -433,7 +441,7 @@ namespace GachaDailyLauncher
                 {
                     MessageBox.Show(
                         "应用界面初始化失败：" + eventArgs.InitializationException.Message,
-                        "次元日常",
+                        "星迹手账",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error
                     );
@@ -465,7 +473,7 @@ namespace GachaDailyLauncher
 
             trayIcon = new NotifyIcon();
             trayIcon.Icon = icon;
-            trayIcon.Text = "次元日常";
+            trayIcon.Text = "星迹手账";
             trayIcon.ContextMenuStrip = menu;
             trayIcon.DoubleClick += delegate { OpenBrowser(); };
             trayIcon.Visible = true;
@@ -500,7 +508,7 @@ namespace GachaDailyLauncher
             {
                 MessageBox.Show(
                     "无法打开浏览器：" + exception.Message + Environment.NewLine + AppUrl,
-                    "次元日常",
+                    "星迹手账",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
                 );
@@ -566,12 +574,17 @@ namespace GachaDailyLauncher
                     }
 
                     int contentLength = 0;
+                    string rangeHeader = String.Empty;
                     string line;
                     while (!String.IsNullOrEmpty(line = ReadHttpLine(stream)))
                     {
                         if (line.StartsWith("Content-Length:", StringComparison.OrdinalIgnoreCase))
                         {
                             Int32.TryParse(line.Substring(line.IndexOf(':') + 1).Trim(), out contentLength);
+                        }
+                        else if (line.StartsWith("Range:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            rangeHeader = line.Substring(line.IndexOf(':') + 1).Trim();
                         }
                     }
 
@@ -622,7 +635,7 @@ namespace GachaDailyLauncher
 
                     if (path.StartsWith(BasePath + "api/wallpaper-file", StringComparison.OrdinalIgnoreCase))
                     {
-                        HandleWallpaperFileRequest(stream, requestParts[1], headOnly);
+                        HandleWallpaperFileRequest(stream, requestParts[1], headOnly, rangeHeader);
                         return;
                     }
 
@@ -757,7 +770,7 @@ namespace GachaDailyLauncher
                         }
 
                         string previewPath = Path.Combine(wallpaperDirectory, previewFile);
-                        if (!File.Exists(previewPath))
+                        if (!File.Exists(previewPath) || !IsImageFile(previewPath))
                         {
                             previewPath = FindFirstPreviewFile(wallpaperDirectory);
                         }
@@ -983,7 +996,7 @@ namespace GachaDailyLauncher
             File.WriteAllText(NativeStatePath, stateJson, new UTF8Encoding(false));
         }
 
-        private static void HandleWallpaperFileRequest(NetworkStream stream, string rawTarget, bool headOnly)
+        private static void HandleWallpaperFileRequest(NetworkStream stream, string rawTarget, bool headOnly, string rangeHeader)
         {
             Uri uri = new Uri("http://localhost" + rawTarget);
             string id = GetQueryValue(uri.Query, "id");
@@ -1006,7 +1019,7 @@ namespace GachaDailyLauncher
                 return;
             }
 
-            WriteFileResponse(stream, filePath, GetContentType(filePath), headOnly);
+            WriteFileResponse(stream, filePath, GetContentType(filePath), headOnly, rangeHeader);
         }
 
         private static string GetQueryValue(string query, string key)
@@ -1027,15 +1040,56 @@ namespace GachaDailyLauncher
             return String.Empty;
         }
 
-        private static void WriteFileResponse(NetworkStream stream, string filePath, string contentType, bool headOnly)
+        private static void WriteFileResponse(NetworkStream stream, string filePath, string contentType, bool headOnly, string rangeHeader)
         {
             FileInfo file = new FileInfo(filePath);
+            long start = 0;
+            long end = file.Length - 1;
+            bool partial = false;
+
+            if (!String.IsNullOrWhiteSpace(rangeHeader) && rangeHeader.StartsWith("bytes=", StringComparison.OrdinalIgnoreCase))
+            {
+                string requestedRange = rangeHeader.Substring(6).Split(',')[0].Trim();
+                string[] bounds = requestedRange.Split(new char[] { '-' }, 2);
+                long parsedStart;
+                long parsedEnd;
+                if (bounds.Length == 2 && bounds[0].Length == 0 && Int64.TryParse(bounds[1], out parsedEnd))
+                {
+                    long suffixLength = Math.Min(parsedEnd, file.Length);
+                    start = Math.Max(0, file.Length - suffixLength);
+                    partial = suffixLength > 0;
+                }
+                else if (bounds.Length == 2 && Int64.TryParse(bounds[0], out parsedStart))
+                {
+                    start = parsedStart;
+                    if (bounds[1].Length > 0 && Int64.TryParse(bounds[1], out parsedEnd))
+                    {
+                        end = Math.Min(parsedEnd, file.Length - 1);
+                    }
+                    partial = start >= 0 && start < file.Length && end >= start;
+                }
+
+                if (!partial)
+                {
+                    string invalidHeader =
+                        "HTTP/1.1 416 Range Not Satisfiable\r\n" +
+                        "Content-Range: bytes */" + file.Length + "\r\n" +
+                        "Content-Length: 0\r\n" +
+                        "Connection: close\r\n\r\n";
+                    byte[] invalidHeaderBytes = Encoding.ASCII.GetBytes(invalidHeader);
+                    stream.Write(invalidHeaderBytes, 0, invalidHeaderBytes.Length);
+                    return;
+                }
+            }
+
+            long responseLength = end - start + 1;
             string header =
-                "HTTP/1.1 200 OK\r\n" +
+                (partial ? "HTTP/1.1 206 Partial Content\r\n" : "HTTP/1.1 200 OK\r\n") +
                 "Content-Type: " + contentType + "\r\n" +
-                "Content-Length: " + file.Length + "\r\n" +
+                "Content-Length: " + responseLength + "\r\n" +
                 "Cache-Control: no-cache, no-store, must-revalidate\r\n" +
-                "Accept-Ranges: none\r\n" +
+                "Accept-Ranges: bytes\r\n" +
+                (partial ? "Content-Range: bytes " + start + "-" + end + "/" + file.Length + "\r\n" : String.Empty) +
                 "Connection: close\r\n\r\n";
             byte[] headerBytes = Encoding.ASCII.GetBytes(header);
             stream.Write(headerBytes, 0, headerBytes.Length);
@@ -1044,11 +1098,14 @@ namespace GachaDailyLauncher
             {
                 using (FileStream fileStream = File.OpenRead(filePath))
                 {
+                    fileStream.Seek(start, SeekOrigin.Begin);
                     byte[] buffer = new byte[128 * 1024];
+                    long remaining = responseLength;
                     int read;
-                    while ((read = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                    while (remaining > 0 && (read = fileStream.Read(buffer, 0, (int)Math.Min(buffer.Length, remaining))) > 0)
                     {
                         stream.Write(buffer, 0, read);
+                        remaining -= read;
                     }
                 }
             }

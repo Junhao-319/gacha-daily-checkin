@@ -9,10 +9,10 @@ export default defineConfig({
     VitePWA({
       disable: process.env.VITE_DISABLE_PWA === "true",
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "apple-touch-icon.png"],
+      includeAssets: ["favicon.png", "apple-touch-icon.png"],
       manifest: {
-        name: "次元日常",
-        short_name: "次元日常",
+        name: "星迹手账",
+        short_name: "星迹手账",
         description: "简洁的多游戏日常任务打卡工具。",
         lang: "zh-CN",
         start_url: "./",
@@ -43,6 +43,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,jpg,jpeg,webp,woff2}"],
+        globIgnores: ["private-gallery/**"],
         cleanupOutdatedCaches: true,
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         navigateFallback: "index.html"

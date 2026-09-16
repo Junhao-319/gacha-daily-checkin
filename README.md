@@ -1,4 +1,4 @@
-# 次元日常
+# 星迹手账
 
 一个只保存在当前设备上的多游戏日常任务打卡应用，同时提供 Windows 桌面版和 Android 版。
 
@@ -37,7 +37,7 @@ pnpm preview
 
 ## Windows 桌面启动器
 
-运行以下命令会在桌面生成 `次元日常.exe`：
+运行以下命令会把程序安装到本机应用目录，并在桌面生成不带 `.exe` 后缀的 `星迹手账` 快捷方式：
 
 ```powershell
 pnpm desktop
@@ -89,6 +89,6 @@ cd android
 .\gradlew.bat assembleDebug
 ```
 
-APK 输出到 `android/app/build/outputs/apk/debug/app-debug.apk`。当前生成的试用包位于桌面，文件名为 `次元日常-Android试用.zip`。
+APK 输出到 `android/app/build/outputs/apk/debug/app-debug.apk`。
 
 Android 版本无法读取 Steam Wallpaper Engine 或扫描 Windows 游戏，但支持游戏目录、任务清单、默认动态背景、本地图片/视频背景和本地数据保存。

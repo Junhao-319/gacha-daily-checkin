@@ -1,8 +1,11 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Modal } from "./Modal";
 import { ImageIcon, MonitorIcon } from "./Icons";
+import { getPublicAssetUrl } from "../lib/assets";
 import { saveBackgroundAsset } from "../lib/backgroundAssets";
 import type { BackgroundMediaType, BackgroundPreference, WallpaperItem } from "../types";
+
+const MAX_LOCAL_GALLERY_IMAGES = 500;
 
 interface BackgroundDialogProps {
   open: boolean;
@@ -10,6 +13,7 @@ interface BackgroundDialogProps {
   current: BackgroundPreference | null;
   wallpapers: WallpaperItem[];
   wallpapersLoading: boolean;
+  privateGalleryUnlocked: boolean;
   onClose: () => void;
   onApply: (preference: BackgroundPreference | null) => void;
 }
@@ -20,6 +24,7 @@ export function BackgroundDialog({
   current,
   wallpapers,
   wallpapersLoading,
+  privateGalleryUnlocked,
   onClose,
   onApply
 }: BackgroundDialogProps) {
@@ -27,6 +32,7 @@ export function BackgroundDialog({
   const [urlMediaType, setUrlMediaType] = useState<BackgroundMediaType>("image");
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [privateGallery, setPrivateGallery] = useState<{ title: string; images: string[] } | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -36,6 +42,28 @@ export function BackgroundDialog({
       setUploading(false);
     }
   }, [current, open]);
+
+  useEffect(() => {
+    if (!open || !privateGalleryUnlocked || privateGallery) return;
+    const controller = new AbortController();
+    void fetch(getPublicAssetUrl("private-gallery/manifest.json")!, { signal: controller.signal })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data: unknown) => {
+        if (!data || typeof data !== "object") return;
+        const record = data as { title?: unknown; images?: unknown };
+        if (Array.isArray(record.images)) {
+          const images = record.images
+            .filter((path): path is string => typeof path === "string")
+            .map((path) => getPublicAssetUrl(path))
+            .filter((path): path is string => Boolean(path));
+          if (images.length > 0) {
+            setPrivateGallery({ title: typeof record.title === "string" ? record.title : "专属图集", images });
+          }
+        }
+      })
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, [open, privateGallery, privateGalleryUnlocked]);
 
   const applyAndClose = (preference: BackgroundPreference | null) => {
     onApply(preference);
@@ -92,9 +120,9 @@ export function BackgroundDialog({
       return;
     }
 
-    const images = Array.from(files)
+      const images = Array.from(files)
       .filter((file) => file.type.startsWith("image/") || /\.(jpe?g|png|webp|gif|bmp|avif)$/i.test(file.name))
-      .slice(0, 40);
+      .slice(0, MAX_LOCAL_GALLERY_IMAGES);
     if (images.length === 0) {
       setError("所选文件夹中没有可用的图片文件");
       return;
@@ -211,12 +239,45 @@ export function BackgroundDialog({
             <ImageIcon width="20" height="20" />
             <span>
               <strong>{uploading ? "正在保存..." : "自动选择本地图集"}</strong>
-              <small>选择文件夹，最多 40 张，自动无缝轮换</small>
+              <small>选择文件夹，最多 500 张，自动无缝轮换</small>
             </span>
             <input accept="image/*" disabled={uploading} multiple onChange={(event) => void handleGalleryUpload(event.target.files)} ref={(input) => input?.setAttribute("webkitdirectory", "")} type="file" />
           </label>
         </div>
       </section>
+
+      {privateGalleryUnlocked ? (
+        <section className="background-section private-gallery-section" aria-labelledby="private-gallery-heading">
+          <div className="background-section-heading">
+            <div>
+              <p className="section-kicker">已解锁内容</p>
+              <h3 id="private-gallery-heading">专属图集</h3>
+            </div>
+            <span className="detected-summary">{privateGallery?.images.length ?? 100} 张</span>
+          </div>
+          <div className="private-gallery-card">
+            <span className="private-gallery-sparkle" aria-hidden="true">✦</span>
+            <div>
+              <strong>{privateGallery?.title ?? "正在读取专属图集..."}</strong>
+              <small>随机内置的 100 张图片，自动轮换</small>
+            </div>
+            <button
+              className="button button-primary"
+              disabled={!privateGallery}
+              onClick={() => privateGallery && applyAndClose({
+                type: "builtin-gallery",
+                mediaType: "image",
+                value: privateGallery.images[0],
+                urls: privateGallery.images,
+                title: privateGallery.title
+              })}
+              type="button"
+            >
+              使用图集
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       <section className="background-section" aria-labelledby="url-background-heading">
         <div className="background-section-heading">

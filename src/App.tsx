@@ -67,6 +67,7 @@ export default function App() {
   const [taskManagerOpen, setTaskManagerOpen] = useState(false);
   const [detectionNotice, setDetectionNotice] = useState<string | null>(null);
   const [backgroundDialogTarget, setBackgroundDialogTarget] = useState<'global' | { gameId: string } | null>(null);
+  const [privateGalleryUnlocked, setPrivateGalleryUnlocked] = useState(false);
   const detectionHandled = useRef(false);
 
   useTheme(state.theme);
@@ -111,6 +112,18 @@ export default function App() {
   const selectedGame = selectedGameId
     ? state.games.find((game) => game.id === selectedGameId && game.archivedAt === null) ?? null
     : null;
+  const globalBackground =
+    state.backgrounds.homeCustomEnabled &&
+    (state.backgrounds.global?.type !== "builtin-gallery" || privateGalleryUnlocked)
+      ? state.backgrounds.global
+      : null;
+  const selectedGameBackground = selectedGame
+    ? state.backgrounds.games[selectedGame.id] ?? null
+    : null;
+  const visibleSelectedGameBackground =
+    selectedGameBackground?.type !== "builtin-gallery" || privateGalleryUnlocked
+      ? selectedGameBackground
+      : null;
 
   const cycleTheme = () => {
     const currentIndex = THEME_ORDER.indexOf(state.theme);
@@ -259,7 +272,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <ClickEffect />
-      <GlobalBackground preference={state.backgrounds.homeCustomEnabled ? state.backgrounds.global : null} />
+      <GlobalBackground preference={globalBackground} />
       <div className="ambient-glow ambient-glow-one" aria-hidden="true" />
       <div className="ambient-glow ambient-glow-two" aria-hidden="true" />
 
@@ -267,7 +280,7 @@ export default function App() {
         <a
           className="brand"
           href="./"
-          aria-label="次元日常首页"
+          aria-label="星迹手账首页"
           onClick={(event) => {
             if (selectedGame) {
               event.preventDefault();
@@ -280,7 +293,7 @@ export default function App() {
           </span>
           <span>
             <small>DAILY CHECK-IN</small>
-            <strong>次元日常</strong>
+            <strong>星迹手账</strong>
           </span>
         </a>
 
@@ -322,7 +335,7 @@ export default function App() {
             game={selectedGame}
             onBack={() => setSelectedGameId(null)}
             onManageTasks={() => setTaskManagerOpen(true)}
-            backgroundPreference={state.backgrounds.games[selectedGame.id] ?? null}
+            backgroundPreference={visibleSelectedGameBackground}
             onChangeBackground={() => setBackgroundDialogTarget({ gameId: selectedGame.id })}
             onToggleTask={(taskId) => toggleTask(selectedGame.id, taskId)}
             state={state}
@@ -358,7 +371,9 @@ export default function App() {
         onRename={(gameId, name) => dispatch({ type: "rename-game", gameId, name })}
         onRestore={(gameId) => dispatch({ type: "restore-game", gameId })}
         onThemeChange={(theme) => dispatch({ type: "set-theme", theme })}
+        onUnlockPrivateGallery={() => setPrivateGalleryUnlocked(true)}
         open={manageDialogOpen}
+        privateGalleryUnlocked={privateGalleryUnlocked}
         theme={state.theme}
       />
       <TaskManagerDialog
@@ -392,6 +407,7 @@ export default function App() {
         }}
         onClose={() => setBackgroundDialogTarget(null)}
         open={backgroundDialogTarget !== null}
+        privateGalleryUnlocked={privateGalleryUnlocked}
         targetLabel={backgroundDialogTarget === 'global' ? '今日页背景' : selectedGame?.name ?? '游戏背景'}
         wallpapers={wallpapers}
         wallpapersLoading={wallpapersLoading}

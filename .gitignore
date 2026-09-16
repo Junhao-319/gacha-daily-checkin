@@ -8,3 +8,5 @@ coverage/
 desktop-launcher/build/
 .tools/
 release/
+public/private-gallery/
+.env.local
