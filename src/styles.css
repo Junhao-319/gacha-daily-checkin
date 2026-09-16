@@ -992,6 +992,12 @@ button.heat-cell:hover {
   color: var(--success);
 }
 
+.mini-action.cancel-game-action:hover {
+  border-color: color-mix(in srgb, var(--danger) 52%, var(--border));
+  background: color-mix(in srgb, var(--danger) 10%, var(--surface-solid));
+  color: var(--danger);
+}
+
 .manage-edit-form {
   display: grid;
   grid-column: 2 / 4;
@@ -3035,28 +3041,34 @@ body::-webkit-scrollbar,
 /* 桌面端玻璃外框：参考游戏启动器的双层圆角与金属描边 */
 @media (min-width: 760px) {
   body {
-    padding: 14px;
+    padding: 8px;
+    background:
+      linear-gradient(115deg, rgba(5, 24, 46, 0.78), rgba(7, 20, 42, 0.34)),
+      var(--page-bg);
   }
 
   .app-shell {
-    min-height: calc(100vh - 28px);
-    max-width: 1360px;
+    min-height: calc(100vh - 16px);
+    max-width: 1500px;
     overflow: hidden;
-    border: 1px solid rgba(214, 235, 255, 0.28);
-    border-radius: 30px;
-    background: linear-gradient(145deg, rgba(8, 18, 35, 0.2), rgba(9, 17, 32, 0.06));
+    border: 1px solid rgba(139, 225, 255, 0.72);
+    border-radius: 18px;
+    background:
+      linear-gradient(90deg, rgba(4, 17, 39, 0.18), transparent 13%, transparent 87%, rgba(4, 17, 39, 0.18)),
+      linear-gradient(145deg, rgba(8, 18, 35, 0.34), rgba(9, 17, 32, 0.08));
     box-shadow:
-      0 0 0 8px rgba(6, 11, 20, 0.42),
-      0 0 0 9px rgba(224, 239, 255, 0.13),
-      0 26px 72px rgba(0, 0, 0, 0.42);
+      inset 0 0 0 1px rgba(235, 252, 255, 0.38),
+      inset 0 0 24px rgba(86, 197, 255, 0.22),
+      0 0 0 2px rgba(5, 13, 28, 0.86),
+      0 22px 72px rgba(0, 0, 0, 0.52);
   }
 
   .app-shell::before {
     position: absolute;
     z-index: -1;
-    inset: 7px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 23px;
+    inset: 5px;
+    border: 1px solid rgba(143, 230, 255, 0.25);
+    border-radius: 13px;
     content: "";
     pointer-events: none;
   }

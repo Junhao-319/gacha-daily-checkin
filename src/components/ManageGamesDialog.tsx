@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { Modal } from "./Modal";
 import {
-  ArchiveIcon,
   CheckIcon,
+  CloseIcon,
   MonitorIcon,
   MoonIcon,
   PencilIcon,
@@ -20,7 +20,7 @@ interface ManageGamesDialogProps {
   onClose: () => void;
   onThemeChange: (theme: ThemeMode) => void;
   onRename: (gameId: string, name: string) => void;
-  onArchive: (gameId: string) => void;
+  onCancelToday: (gameId: string) => void;
   onRestore: (gameId: string) => void;
   privateGalleryUnlocked: boolean;
   onUnlockPrivateGallery: () => void;
@@ -41,7 +41,7 @@ export function ManageGamesDialog({
   onClose,
   onThemeChange,
   onRename,
-  onArchive,
+  onCancelToday,
   onRestore,
   privateGalleryUnlocked,
   onUnlockPrivateGallery
@@ -128,7 +128,7 @@ export function ManageGamesDialog({
               <strong>{game.name}</strong>
               <small>
                 {archived && game.archivedAt
-                  ? `${formatShortMonthDay(toDateKey(new Date(game.archivedAt)))}归档`
+                  ? `${formatShortMonthDay(toDateKey(new Date(game.archivedAt)))}已取消`
                   : "当前进行中"}
               </small>
             </span>
@@ -154,13 +154,17 @@ export function ManageGamesDialog({
                 </button>
               ) : (
                 <button
-                  aria-label={`归档 ${game.name}`}
-                  className="mini-action"
-                  onClick={() => onArchive(game.id)}
-                  title="归档"
+                  aria-label={`取消今日游戏 ${game.name}`}
+                  className="mini-action cancel-game-action"
+                  onClick={() => {
+                    if (window.confirm(`取消「${game.name}」的今日游戏？历史打卡记录会保留，之后可随时恢复。`)) {
+                      onCancelToday(game.id);
+                    }
+                  }}
+                  title="取消今日游戏"
                   type="button"
                 >
-                  <ArchiveIcon width="17" height="17" />
+                  <CloseIcon width="17" height="17" />
                 </button>
               )}
             </span>
@@ -172,7 +176,7 @@ export function ManageGamesDialog({
 
   return (
     <Modal
-      description="归档只移出今日进度，过去的打卡记录会继续保留。"
+      description="取消今日游戏只会移出今日清单，过去的打卡记录会继续保留，之后可随时恢复。"
       onClose={onClose}
       open={open}
       size="wide"
@@ -259,14 +263,14 @@ export function ManageGamesDialog({
           <div className="manage-section-heading">
             <div>
               <p className="section-kicker">历史保留</p>
-              <h3 id="archived-games-heading">已归档 · {archivedGames.length}</h3>
+              <h3 id="archived-games-heading">已取消 · {archivedGames.length}</h3>
             </div>
           </div>
           <div className="manage-list">
             {archivedGames.length > 0 ? (
               archivedGames.map((game) => renderGameRow(game, true))
             ) : (
-              <p className="manage-empty">暂无归档游戏。</p>
+              <p className="manage-empty">暂无已取消的游戏。</p>
             )}
           </div>
         </section>

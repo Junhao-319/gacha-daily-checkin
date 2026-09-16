@@ -361,7 +361,7 @@ export default function App() {
       />
       <ManageGamesDialog
         games={state.games}
-        onArchive={(gameId) => {
+        onCancelToday={(gameId) => {
           if (selectedGameId === gameId) {
             setSelectedGameId(null);
           }

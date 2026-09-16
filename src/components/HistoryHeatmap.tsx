@@ -124,7 +124,7 @@ export function HistoryHeatmap({
                     <strong>{game.name}</strong>
                     <small>
                       {progress.completed}/{progress.total} 项
-                      {game.archivedAt ? " · 已归档" : ""}
+                      {game.archivedAt ? " · 已取消" : ""}
                     </small>
                   </span>
                   {completedAt ? <time dateTime={completedAt}>{formatCompletionTime(completedAt)}</time> : null}

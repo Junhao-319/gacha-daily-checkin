@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import App from "./App";
 
 describe("App", () => {
@@ -49,7 +49,7 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "编辑任务清单" })).toBeInTheDocument();
   });
 
-  it("keeps archived task history visible in the selected day detail", async () => {
+  it("keeps cancelled game task history visible in the selected day detail", async () => {
     const user = userEvent.setup();
     render(<App />);
 
@@ -58,13 +58,14 @@ describe("App", () => {
     await user.click(screen.getByRole("button", { name: "返回今日清单" }));
     await user.click(screen.getByRole("button", { name: "管理游戏与外观" }));
     const dialog = screen.getByRole("dialog");
-    await user.click(within(dialog).getByRole("button", { name: "归档 鸣潮" }));
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    await user.click(within(dialog).getByRole("button", { name: "取消今日游戏 鸣潮" }));
     await user.click(within(dialog).getByRole("button", { name: "关闭" }));
 
     const detail = document.querySelector(".day-detail");
     expect(detail).not.toBeNull();
     expect(within(detail as HTMLElement).getByText("鸣潮")).toBeInTheDocument();
     expect(within(detail as HTMLElement).getByText(/1\/4 项/)).toBeInTheDocument();
-    expect(within(detail as HTMLElement).getByText(/已归档/)).toBeInTheDocument();
+    expect(within(detail as HTMLElement).getByText(/已取消/)).toBeInTheDocument();
   });
 });
